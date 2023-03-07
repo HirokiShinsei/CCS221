@@ -11,10 +11,10 @@ st.write('7 8 9')
 choice = st.selectbox('Choice:', [1, 2, 3, 4, 5, 6, 7, 8, 9])
 
 if choice == 1:
-    two_d_arr = np.array([])
+    two_d_arr = np.zeros((3, 3)) # create a 10x10 array of zeros
 
-    for i in two_d_arr:
-        np.append()
+    # modify the values in the array as needed
+
 
 plt.imshow(two_d_arr, interpolation='none', cmap='winter')
 st.pyplot()
