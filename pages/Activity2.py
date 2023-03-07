@@ -16,5 +16,5 @@ if choice == 1:
     for i in two_d_arr:
         np.append()
 
-    plt.imshow(two_d_arr, interpolation='none', cmap='winter')
-    st.pyplot()
+plt.imshow(two_d_arr, interpolation='none', cmap='winter')
+st.pyplot()
