@@ -122,11 +122,11 @@ def bresenhamLine(x1, y1, x2, y2, color):
             p = p + 2 * dy
 
 def main():
-    x = st.number_input("Enter X1: ")
-    y = st.number_input("Enter Y1: ")
+    x = st.number_input('X1', min_value=1, max_value=100, value=15, step=1)
+    y = st.number_input('Y1', min_value=1, max_value=100, value=15, step=1)
 
-    xEnd = st.number_input("Enter X2: ")
-    yEnd = st.number_input("Enter Y2: ")
+    xEnd = st.number_input('X2', min_value=1, max_value=100, value=20, step=1)
+    yEnd = st.number_input('Y2', min_value=1, max_value=100, value=20, step=1)
 
     color = "b."
 
