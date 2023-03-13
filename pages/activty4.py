@@ -8,6 +8,7 @@ import tensorflow as tf
 
 tf.compat.v1.disable_eager_execution()
 
+
 def _plt_basic_object_(points):
     tri = Delaunay(points).convex_hull
     fig = plt.figure(figsize=(8, 8))
@@ -19,6 +20,7 @@ def _plt_basic_object_(points):
     ax.set_ylim3d(-5, 5)
     ax.set_zlim3d(-5, 5)
     st.pyplot(fig)
+
 
 def _cube_(bottom_lower=(0, 0, 0), side_length=5):
     bottom_lower = np.array(bottom_lower)
@@ -35,6 +37,7 @@ def _cube_(bottom_lower=(0, 0, 0), side_length=5):
     ])
     return points
 
+
 def _triangular_prism_(bottom_lower=(0, 0, 0), side_length=5, height=5):
     bottom_lower = np.array(bottom_lower)
     points = np.vstack([
@@ -50,6 +53,7 @@ def _triangular_prism_(bottom_lower=(0, 0, 0), side_length=5, height=5):
     points = np.dot(points, rotation_matrix.T)
     return points
 
+
 def _pyramid_(bottom_lower=(0, 0, 0), side_length=5, height=5):
     bottom_lower = np.array(bottom_lower)
     base_points = np.vstack([
@@ -62,14 +66,15 @@ def _pyramid_(bottom_lower=(0, 0, 0), side_length=5, height=5):
     points = np.vstack([base_points, top_point])
     return points
 
+
 def _rectangular_prism_(bottom_lower=(0, 0, 0), length=5, width=5, height=5):
-    
+
     bottom_lower = np.array(bottom_lower)
-    
+
     points = np.vstack([
         bottom_lower,
-        bottom_lower + [0, width, 0], 
-        bottom_lower + [length, width, 0], 
+        bottom_lower + [0, width, 0],
+        bottom_lower + [length, width, 0],
         bottom_lower + [length, 0, 0],
         bottom_lower + [0, 0, height],
         bottom_lower + [0, width, height],
