@@ -89,6 +89,26 @@ def _rectangular_prism_(bottom_lower=(0, 0, 0), length=5, width=5, height=5):
 def translate_obj(points, amount):
     return tf.add(points, amount)
 
+#defining each rotational matrix
+def x_rotation_matrix(theta):
+    theta = np.radians(theta)
+    return np.array([[1, 0, 0], [0, np.cos(theta), -np.sin(theta)], [0, np.sin(theta), np.cos(theta)]])
+
+def y_rotation_matrix(theta):
+    theta = np.radians(theta)
+    return np.array([[np.cos(theta), 0, np.sin(theta)], [0, 1, 0], [-np.sin(theta), 0, np.cos(theta)]])
+
+def z_rotation_matrix(theta):
+    theta = np.radians(theta)
+    return np.array([[np.cos(theta), -np.sin(theta), 0], [np.sin(theta), np.cos(theta), 0], [0, 0, 1]])
+
+#defining the main rotation transformation function
+def rotate_object(points, rot_x, rot_y, rot_z):
+    points = tf.matmul(points, x_rotation_matrix(rot_x))
+    points = tf.matmul(points, y_rotation_matrix(rot_y))
+    points = tf.matmul(points, z_rotation_matrix(rot_z))
+    return points
+
 
 init_cube = _cube_(side_length=5)
 points_cube = tf.constant(init_cube, dtype=tf.float32)
@@ -103,6 +123,7 @@ init_rectangular_prism = _rectangular_prism_(length=5, width=3, height=4)
 points3 = tf.constant(init_rectangular_prism, dtype=tf.float32)
 
 translation_amount = tf.constant([1, 2, 3], dtype=tf.float32)
+
 translated_object = translate_obj(points, translation_amount)
 translated_object2 = translate_obj(points2, translation_amount)
 translated_object3 = translate_obj(points_cube, translation_amount)
@@ -124,14 +145,18 @@ st.title("3D Object Translation")
 st.header("Original and Translated Objects")
 st.write("Use the sliders to translate the objects in the x, y, and z directions.")
 
-# create sliders to adjust translation amount
+# creates sliders to adjust translation amount
 translation_x = st.slider("X", -5.0, 5.0, 1.0, 0.1)
 translation_y = st.slider("Y", -5.0, 5.0, 2.0, 0.1)
 translation_z = st.slider("Z", -5.0, 5.0, 3.0, 0.1)
 
+# creates sliders for rotation angles
+rot_x = st.slider("Rotate around X-axis", -180, 180, 0, 1)
+rot_y = st.slider("Rotate around Y-axis", -180, 180, 0, 1)
+rot_z = st.slider("Rotate around Z-axis", -180, 180, 0, 1)
+
 # create translated objects
-translation_amount = tf.constant(
-    [translation_x, translation_y, translation_z], dtype=tf.float32)
+translation_amount = tf.constant([translation_x, translation_y, translation_z], dtype=tf.float32)
 translated_triangular_prism = translate_obj(points, translation_amount)
 translated_pyramid = translate_obj(points2, translation_amount)
 translated_cube = translate_obj(points_cube, translation_amount)
@@ -143,20 +168,29 @@ with tf.compat.v1.Session() as session:
     translated_pyramid = session.run(translated_pyramid)
     translated_cube = session.run(translated_cube)
     translated_rectangular_prism = session.run(translated_rectangular_prism)
+    
+rotated_triangular_prism = rotate_object(translated_triangular_prism, rot_x, rot_y, rot_z)
+rotated_pyramid = rotate_object(translated_pyramid, rot_x, rot_y, rot_z)
+rotated_cube = rotate_object(translated_cube, rot_x, rot_y, rot_z)
+rotated_rectangular_prism = rotate_object(translated_rectangular_prism, rot_x, rot_y, rot_z)
 
-# plot original and translated objects
+# plot original and transformed objects
 st.write("Triangular Prism")
 _plt_basic_object_(init_triangular_prism)
 _plt_basic_object_(translated_triangular_prism)
+_plt_basic_object_(rotated_triangular_prism)
 
 st.write("Pyramid")
 _plt_basic_object_(init_pyramid)
 _plt_basic_object_(translated_pyramid)
+_plt_basic_object_(rotated_pyramid)
 
 st.write("Cube")
 _plt_basic_object_(init_cube)
 _plt_basic_object_(translated_cube)
+_plt_basic_object_(rotated_cube)
 
 st.write("Rectangular Prism")
 _plt_basic_object_(init_rectangular_prism)
 _plt_basic_object_(translated_rectangular_prism)
+_plt_basic_object_(rotated_rectangular_prism)
