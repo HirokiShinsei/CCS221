@@ -1,8 +1,3 @@
-# Group - 6
-# Lord Patrick Raizen Togonon
-# Matthew Andrei Valencia
-# Cyril Reynold Trojillo
-
 import streamlit as st
 import numpy as np
 import cv2
@@ -56,7 +51,7 @@ def reflection_v(img):
 def reflection_h(img):
     rows, cols = img.shape[:2]
     m_reflection_ = np.float32([[-1, 0, cols],
-                               [0, 1, 0],
+                                [0, 1, 0],
                                 [0, 0, 1]])
     reflected_img_ = cv2.warpPerspective(
         img, m_reflection_, (int(cols), int(rows)))
@@ -76,9 +71,9 @@ def shear_X(img, shearX):
 
 def shear_Y(img, shearY):
     rows, cols = img.shape[:2]
-    m_shearing_x = np.float32([[1, 0, 0],
-                              [shearY, 1, 0],
-                               [0, 0, 1]])
+    m_shearing_x = np.float32([ [1, 0, 0],
+                                [shearY, 1, 0],
+                                [0, 0, 1]])
 
     sheared_img_x = cv2.warpPerspective(
         img, m_shearing_x, (int(cols*1.5), int(rows*1.5)))
@@ -87,38 +82,33 @@ def shear_Y(img, shearY):
 
 def main():
     
-    # Display up to 5 image uploaders
-    imgs = []
-    for i in range(5):
-        img_file = st.file_uploader(f"Upload Image {i+1}", type=["jpg", "jpeg", "png"], key=f"img{i}")
-        if img_file is not None:
-            img = Image.open(img_file)
-            st.image(img, caption=f"Uploaded Image {i+1}", use_column_width=True)
-            img_array = np.array(img)
-            st.write(f"Image {i+1} shape:", img_array.shape)
-            imgs.append(img_array)
+    #Image Upload
+    img_file = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
+    
+    
+    #Main Process
+    if img_file is not None:
+        img = Image.open(img_file)
+        st.image(img, caption="Uploaded Image", use_column_width=True)
+        st.write("Image shape:", img.shape)
         
-    # The following lines takes user input for shifting X, Y, and rotation directions, shear value(skew) whether it be to the right or left.
-    tx = st.slider("Enter the value to shift in X-axis", -100, 100, 0)
-    ty = st.slider("Enter the value to shift in Y-axis", -100, 100, 0)
-    rotx = st.slider("Enter value to rotate the image in degrees", -180, 180, 0)
-    scaleX = st.slider("Enter the value to scale in X-Axis", 0.1, 5.0, 1.0)
-    scaleY = st.slider("Enter the value to scale in Y-Axis", 0.1, 5.0, 1.0)
-    shearX = st.slider("Enter the value to shear in X-Axis", -1.0, 1.0, 0.0, step=0.1)
-    shearY = st.slider("Enter the value to shear in Y-Axis", -1.0, 1.0, 0.0, step=0.1)
+        # The following lines takes user input for shifting X, Y, and rotation directions, shear value(skew) whether it be to the right or left.
+        tx = st.slider("Enter the value to shift in X-axis", -100, 100, 0)
+        ty = st.slider("Enter the value to shift in Y-axis", -100, 100, 0)
+        rotx = st.slider("Enter value to rotate the image in degrees", -180, 180, 0)
+        scaleX = st.slider("Enter the value to scale in X-Axis", 0.1, 5.0, 1.0)
+        scaleY = st.slider("Enter the value to scale in Y-Axis", 0.1, 5.0, 1.0)
+        shearX = st.slider("Enter the value to shear in X-Axis", -1.0, 1.0, 0.0, step=0.1)
+        shearY = st.slider("Enter the value to shear in Y-Axis", -1.0, 1.0, 0.0, step=0.1)
 
-
-    # For loop to read a specific number of images to apply the transformations on.
-    for i, img in enumerate(imgs):
-
-        # The following lines calls each of the functions for specific transformations of the images.
-        translated_img_ = translation(imgs[i], tx, ty)
-        rotated_img_ = rotation(imgs[i], rotx)
-        scaled_img_ = scaling_img(imgs[i], scaleX, scaleY)
-        reflected_h = reflection_h(imgs[i])
-        reflected_v = reflection_v(imgs[i])
-        sheared_img_x = shear_X(imgs[i], shearX)
-        sheared_img_y = shear_Y(imgs[i], shearY)
+        # The following lines calls each of the functions for specific transformations of the image.
+        translated_img_ = translation(img, tx, ty)
+        rotated_img_ = rotation(img, rotx)
+        scaled_img_ = scaling_img(img, scaleX, scaleY)
+        reflected_h = reflection_h(img)
+        reflected_v = reflection_v(img)
+        sheared_img_x = shear_X(img, shearX)
+        sheared_img_y = shear_Y(img, shearY)
 
         # The following functions plots where the specific transformation be placed on a 2 column by 4 rows figure.
         fig, axs = plt.subplots(2, 4, figsize=(18, 14))
@@ -157,5 +147,10 @@ def main():
         axs[1, 3].imshow(sheared_img_y)
         axs[1, 3].set_title("Sheared Vertically(Y)")
         axs[1, 3].axis("off")
-
+        
         st.pyplot(fig)
+    
+if __name__ == "main":
+    main()
+
+
