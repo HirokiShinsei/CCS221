@@ -109,7 +109,7 @@ def main():
 
 
     # For loop to read a specific number of images to apply the transformations on.
-     for i, img in enumerate(imgs):
+    for i, img in enumerate(imgs):
 
         # The following lines calls each of the functions for specific transformations of the images.
         translated_img_ = translation(img, tx, ty)
