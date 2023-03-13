@@ -112,13 +112,13 @@ def main():
     for i, img in enumerate(imgs):
 
         # The following lines calls each of the functions for specific transformations of the images.
-        translated_img_ = translation(img, tx, ty)
-        rotated_img_ = rotation(img, rotx)
-        scaled_img_ = scaling_img(img, scaleX, scaleY)
-        reflected_h = reflection_h(img)
-        reflected_v = reflection_v(img)
-        sheared_img_x = shear_X(img, shearX)
-        sheared_img_y = shear_Y(img, shearY)
+        translated_img_ = translation(imgs[i], tx, ty)
+        rotated_img_ = rotation(imgs[i], rotx)
+        scaled_img_ = scaling_img(imgs[i], scaleX, scaleY)
+        reflected_h = reflection_h(imgs[i])
+        reflected_v = reflection_v(imgs[i])
+        sheared_img_x = shear_X(imgs[i], shearX)
+        sheared_img_y = shear_Y(imgs[i], shearY)
 
         # The following functions plots where the specific transformation be placed on a 2 column by 4 rows figure.
         fig, axs = plt.subplots(2, 4, figsize=(18, 14))
