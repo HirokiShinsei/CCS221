@@ -6,7 +6,7 @@
 import streamlit as st
 import numpy as np
 import cv2
-from matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 from PIL import Image
 
 # The following functions are for each specific transformation to be applied to the image.
