@@ -4,9 +4,7 @@ import cv2
 from matplotlib import pyplot as plt
 from PIL import Image
 
-# The following functions are for each specific transformation to be applied to the image.
-
-
+#Functions for image transformations (translation, rotation, shear, reflect)
 def translation(img, tx, ty):
     rows, cols = img.shape[:2]
     m_translation_ = np.float32([[1, 0, tx],
