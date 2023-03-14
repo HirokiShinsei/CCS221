@@ -3,6 +3,9 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 from PIL import Image
+import pandas as pd
+from io import BytesIO
+
 
 #Functions for image transformations (translation, rotation, shear, reflect)
 def translation(img, tx, ty):
@@ -78,81 +81,84 @@ def shear_Y(img, shearY):
     return sheared_img_x
 
 
-def main():
+st.set_page_config(page_title="Image Transformation", page_icon="🖼️")
+
+st.title("Image Transformation")
+
+#Image Upload
+img_file = st.file_uploader("Choose a file")
+
+# uploaded_file = st.file_uploader("Choose a file")
+# if uploaded_file is not None:
+#     # To read file as bytes:
+#     bytes_data = uploaded_file.getvalue()
+#     st.write(bytes_data)
+
+
+#Main Process
+if img_file is not None:
     
-    st.title("Image Transformation")
+    image_bytes = np.asarray(bytearray(img_file.read()), dtype=np.uint8)
+    img = cv2.imdecode(image_bytes, 1)
+    st.image(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), caption="Uploaded Image", use_column_width=True)
+    st.write("Image shape:", img.shape)
 
-    #Image Upload
-    img_file = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
-    
-    
-    #Main Process
-    if img_file is not None:
-        img = Image.open(img_file)
-        st.image(img, caption="Uploaded Image", use_column_width=True)
-        st.write("Image shape:", img.shape)
-        
-        # The following lines takes user input for shifting X, Y, and rotation directions, shear value(skew) whether it be to the right or left.
-        tx = st.slider("Enter the value to shift in X-axis", -100, 100, 0)
-        ty = st.slider("Enter the value to shift in Y-axis", -100, 100, 0)
-        rotx = st.slider("Enter value to rotate the image in degrees", -180, 180, 0)
-        scaleX = st.slider("Enter the value to scale in X-Axis", 0.1, 5.0, 1.0)
-        scaleY = st.slider("Enter the value to scale in Y-Axis", 0.1, 5.0, 1.0)
-        shearX = st.slider("Enter the value to shear in X-Axis", -1.0, 1.0, 0.0, step=0.1)
-        shearY = st.slider("Enter the value to shear in Y-Axis", -1.0, 1.0, 0.0, step=0.1)
+    # The following lines takes user input for shifting X, Y, and rotation directions, shear value(skew) whether it be to the right or left.
+    tx = st.slider("Enter the value to shift in X-axis", -100, 100, 0)
+    ty = st.slider("Enter the value to shift in Y-axis", -100, 100, 0)
+    rotx = st.slider("Enter value to rotate the image in degrees", -180, 180, 0)
+    scaleX = st.slider("Enter the value to scale in X-Axis", 0.1, 5.0, 1.0)
+    scaleY = st.slider("Enter the value to scale in Y-Axis", 0.1, 5.0, 1.0)
+    shearX = st.slider("Enter the value to shear in X-Axis", -1.0, 1.0, 0.0, step=0.1)
+    shearY = st.slider("Enter the value to shear in Y-Axis", -1.0, 1.0, 0.0, step=0.1)
 
-        # The following lines calls each of the functions for specific transformations of the image.
-        translated_img_ = translation(img, tx, ty)
-        rotated_img_ = rotation(img, rotx)
-        scaled_img_ = scaling_img(img, scaleX, scaleY)
-        reflected_h = reflection_h(img)
-        reflected_v = reflection_v(img)
-        sheared_img_x = shear_X(img, shearX)
-        sheared_img_y = shear_Y(img, shearY)
+    # The following lines calls each of the functions for specific transformations of the image.
+    translated_img_ = translation(img, tx, ty)
+    rotated_img_ = rotation(img, rotx)
+    scaled_img_ = scaling_img(img, scaleX, scaleY)
+    reflected_h = reflection_h(img)
+    reflected_v = reflection_v(img)
+    sheared_img_x = shear_X(img, shearX)
+    sheared_img_y = shear_Y(img, shearY)
 
-        # The following functions plots where the specific transformation be placed on a 2 column by 4 rows figure.
-        fig, axs = plt.subplots(2, 4, figsize=(18, 14))
-        fig = plt.gcf()
-        # This line sets the window title to OpenCV Transformations
-        fig.canvas.manager.set_window_title('OpenCV Transformations')
+# The following functions plots where the specific transformation be placed on a 2 column by 4 rows figure.
+    fig, axs = plt.subplots(2, 4, figsize=(18, 14))
+    fig = plt.gcf()
+    # This line sets the window title to OpenCV Transformations
+    fig.canvas.manager.set_window_title('OpenCV Transformations')
 
-        axs[0, 0].imshow(img)
-        axs[0, 0].set_title("Original Image")
-        axs[0, 0].axis("off")
+    axs[0, 0].imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    axs[0, 0].set_title("Original Image")
+    axs[0, 0].axis("off")
 
-        axs[0, 1].imshow(translated_img_)
-        axs[0, 1].set_title("Translated Image")
-        axs[0, 1].axis("off")
+    axs[0, 1].imshow(cv2.cvtColor(translated_img_, cv2.COLOR_BGR2RGB))
+    axs[0, 1].set_title("Translated Image")
+    axs[0, 1].axis("off")
 
-        axs[0, 2].imshow(rotated_img_)
-        axs[0, 2].set_title("Rotated Image")
-        axs[0, 2].axis("off")
+    axs[0, 2].imshow(cv2.cvtColor(rotated_img_, cv2.COLOR_BGR2RGB))
+    axs[0, 2].set_title("Rotated Image")
+    axs[0, 2].axis("off")
 
-        axs[0, 3].imshow(scaled_img_)
-        axs[0, 3].set_title("Scaled Image")
-        axs[0, 3].axis("off")
+    axs[0, 3].imshow(cv2.cvtColor(scaled_img_, cv2.COLOR_BGR2RGB))
+    axs[0, 3].set_title("Scaled Image")
+    axs[0, 3].axis("off")
 
-        axs[1, 0].imshow(reflected_h)
-        axs[1, 0].set_title("Reflected Image (Horizontal)")
-        axs[1, 0].axis("off")
+    axs[1, 0].imshow(cv2.cvtColor(reflected_h, cv2.COLOR_BGR2RGB))
+    axs[1, 0].set_title("Reflected Image (Horizontal)")
+    axs[1, 0].axis("off")
 
-        axs[1, 1].imshow(reflected_v)
-        axs[1, 1].set_title("Reflected Image (Vertical)")
-        axs[1, 1].axis("off")
+    axs[1, 1].imshow(cv2.cvtColor(reflected_v, cv2.COLOR_BGR2RGB))
+    axs[1, 1].set_title("Reflected Image (Vertical)")
+    axs[1, 1].axis("off")
 
-        axs[1, 2].imshow(sheared_img_x)
-        axs[1, 2].set_title("Sheared Horizontally(X)")
-        axs[1, 2].axis("off")
+    axs[1, 2].imshow(cv2.cvtColor(sheared_img_x, cv2.COLOR_BGR2RGB))
+    axs[1, 2].set_title("Sheared Horizontally(X)")
+    axs[1, 2].axis("off")
 
-        axs[1, 3].imshow(sheared_img_y)
-        axs[1, 3].set_title("Sheared Vertically(Y)")
-        axs[1, 3].axis("off")
-        
-        
+    axs[1, 3].imshow(cv2.cvtColor(sheared_img_y, cv2.COLOR_BGR2RGB))
+    axs[1, 3].set_title("Sheared Vertically(Y)")
+    axs[1, 3].axis("off")
 
     st.pyplot(fig)
-    
-if __name__ == "main":
-    main()
 
 
