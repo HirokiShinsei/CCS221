@@ -10,19 +10,23 @@ tf.compat.v1.disable_eager_execution()
 
 
 def _plt_basic_object_(init_points, translated_points=None):
-    tri = Delaunay(init_points).convex_hull
-    fig = plt.figure(figsize=(8, 8))
-    ax = fig.add_subplot(111, projection='3d')
-    s1 = ax.plot_trisurf(init_points[:, 0], init_points[:, 1], init_points[:, 2],
-                         triangles=tri,
-                         shade=True, cmap=cm.rainbow, lw=0.5, alpha=0.5)
-    if translated_points is not None:
-        tri = Delaunay(translated_points).convex_hull
-        s2 = ax.plot_trisurf(translated_points[:, 0], translated_points[:, 1], translated_points[:, 2],
+    with tf.compat.v1.Session() as session:
+        init_points = session.run(init_points)
+        if translated_points is not None:
+            translated_points = session.run(translated_points)
+        tri = Delaunay(init_points).convex_hull
+        fig = plt.figure(figsize=(8, 8))
+        ax = fig.add_subplot(111, projection='3d')
+        s1 = ax.plot_trisurf(init_points[:, 0], init_points[:, 1], init_points[:, 2],
                              triangles=tri,
-                             shade=True, cmap=cm.rainbow, lw=0.5)
+                             shade=True, cmap=cm.rainbow, lw=0.5, alpha=0.5)
+        if translated_points is not None:
+            tri = Delaunay(translated_points).convex_hull
+            s2 = ax.plot_trisurf(translated_points[:, 0], translated_points[:, 1], translated_points[:, 2],
+                                 triangles=tri,
+                                 shade=True, cmap=cm.rainbow, lw=0.5)
     ax.set_xlim3d(-10, 10)
-    ax.set_ylim3d(-10, 10)
+    ax.set_ylim3d(-10, 10)        
     ax.set_zlim3d(-10, 10)
     st.pyplot(fig)
 
@@ -179,20 +183,44 @@ rotated_pyramid = rotate_object(translated_pyramid, rot_x, rot_y, rot_z)
 rotated_cube = rotate_object(translated_cube, rot_x, rot_y, rot_z)
 rotated_rectangular_prism = rotate_object(translated_rectangular_prism, rot_x, rot_y, rot_z)
 
+# evaluate rotated objects in session
+with tf.compat.v1.Session() as session:
+    rotated_triangular_prism = session.run(rotated_triangular_prism)
+    rotated_pyramid = session.run(rotated_pyramid)
+    rotated_cube = session.run(rotated_cube)
+    rotated_rectangular_prism = session.run(rotated_rectangular_prism)
+
 # plot original and transformed objects
 st.write("Triangular Prism")
-_plt_basic_object_(init_triangular_prism, translated_triangular_prism)
-_plt_basic_object_(init_triangular_prism, rotated_triangular_prism)
+_plt_basic_object_(tf.constant(init_triangular_prism, dtype=tf.float32), 
+                    tf.constant(translated_triangular_prism, dtype=tf.float32))
 
-st.write("Pyramid")
-_plt_basic_object_(init_pyramid, translated_pyramid)
-_plt_basic_object_(init_pyramid, rotated_pyramid)
+st.write("Rotated Triangular Prism")
+_plt_basic_object_(tf.constant(init_triangular_prism, dtype=tf.float32), 
+                    tf.constant(rotated_triangular_prism, dtype=tf.float32))
 
 
-st.write("Cube")
-_plt_basic_object_(init_cube, translated_cube)
-_plt_basic_object_(init_cube, rotated_cube)
+st.write("Translated Pyramid")
+_plt_basic_object_(tf.constant(init_pyramid, dtype=tf.float32), 
+                    tf.constant(translated_pyramid, dtype=tf.float32))
+
+st.write("Rotated Pyramid")
+_plt_basic_object_(tf.constant(init_pyramid, dtype=tf.float32), 
+                    tf.constant(rotated_pyramid, dtype=tf.float32))
+
+st.write("Translated Cube")
+_plt_basic_object_(tf.constant(init_cube,dtype=tf.float32), 
+                   tf.constant(translated_cube, dtype=tf.float32))
+
+st.write("Rotated Cube")
+_plt_basic_object_(tf.constant(init_cube,dtype=tf.float32), 
+                   tf.constant(rotated_cube, dtype=tf.float32))
+
 
 st.write("Rectangular Prism")
-_plt_basic_object_(init_rectangular_prism, translated_rectangular_prism)
-_plt_basic_object_(init_rectangular_prism, rotated_rectangular_prism)
+_plt_basic_object_(tf.constant(init_rectangular_prism,dtype=tf.float32), 
+                   tf.constant(translated_rectangular_prism, dtype=tf.float32))
+
+st.write("Rotated Rectangular Prism")
+_plt_basic_object_(tf.constant(init_rectangular_prism,dtype=tf.float32), 
+                   tf.constant(rotated_rectangular_prism, dtype=tf.float32))

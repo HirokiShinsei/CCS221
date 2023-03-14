@@ -81,8 +81,7 @@ def shear_Y(img, shearY):
 def main():
     
     st.title("Image Transformation")
-    
-    
+
     #Image Upload
     img_file = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
     
@@ -149,7 +148,9 @@ def main():
         axs[1, 3].set_title("Sheared Vertically(Y)")
         axs[1, 3].axis("off")
         
-        st.pyplot(fig)
+        
+
+    st.pyplot(fig)
     
 if __name__ == "main":
     main()
