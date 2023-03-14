@@ -95,43 +95,43 @@ if img_file is not None:
     fig = plt.gcf()
     fig.canvas.manager.set_window_title('Quiz') #This line sets the window title to OpenCV Transformations
 
-    axs[0, 0].imshow(old_translated_img_1)
+    axs[0, 0].imshow(cv2.cvtColor(old_translated_img_1, cv2.COLOR_BGR2RGB))
     axs[0, 0].set_title("Number #1")
     axs[0, 0].axis("off")
 
-    axs[0, 1].imshow(old_translated_img_2)
+    axs[0, 1].imshow(cv2.cvtColor(old_translated_img_2, cv2.COLOR_BGR2RGB))
     axs[0, 1].set_title("Number #2")
     axs[0, 1].axis("off")
 
-    axs[0, 2].imshow(old_translated_img_3)
+    axs[0, 2].imshow(cv2.cvtColor(old_translated_img_3, cv2.COLOR_BGR2RGB))
     axs[0, 2].set_title("Number #3")
     axs[0, 2].axis("off")
 
-    axs[0, 3].imshow(old_translated_img_4)
+    axs[0, 3].imshow(cv2.cvtColor(old_translated_img_4, cv2.COLOR_BGR2RGB))
     axs[0, 3].set_title("Number #4")
     axs[0, 3].axis("off")
 
-    axs[0, 4].imshow(old_translated_img_5)
+    axs[0, 4].imshow(cv2.cvtColor(old_translated_img_5, cv2.COLOR_BGR2RGB))
     axs[0, 4].set_title("Number #5")
     axs[0, 4].axis("off")
 
-    axs[1, 0].imshow(new_translated_img_1)
+    axs[1, 0].imshow(cv2.cvtColor(new_translated_img_1, cv2.COLOR_BGR2RGB))
     axs[1, 0].set_title("New")
     axs[1, 0].axis("off")
 
-    axs[1, 1].imshow(new_translated_img_2)
+    axs[1, 1].imshow(cv2.cvtColor(new_translated_img_2, cv2.COLOR_BGR2RGB))
     axs[1, 1].set_title("New")
     axs[1, 1].axis("off")
 
-    axs[1, 2].imshow(new_translated_img_3)
+    axs[1, 2].imshow(cv2.cvtColor(new_translated_img_3, cv2.COLOR_BGR2RGB))
     axs[1, 2].set_title("New")
     axs[1, 2].axis("off")
 
-    axs[1, 3].imshow(new_translated_img_4)
+    axs[1, 3].imshow(cv2.cvtColor(new_translated_img_4, cv2.COLOR_BGR2RGB))
     axs[1, 3].set_title("New")
     axs[1, 3].axis("off")
 
-    axs[1, 4].imshow(new_translated_img_5)
+    axs[1, 4].imshow(cv2.cvtColor(new_translated_img_5, cv2.COLOR_BGR2RGB))
     axs[1, 4].set_title("New")
     axs[1, 4].axis("off")
 
