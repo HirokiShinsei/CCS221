@@ -28,6 +28,8 @@ def translation(img, tx, ty):
     return translated_img_
 
 #Main
+
+st.title("Test Run!")
 oldX = [2,3,4,5,6]
 oldY = [5,6,7,8,9]
 BXnew = []
