@@ -52,6 +52,10 @@ st.title("Image Transformation")
 
 #Image Upload
 img_file = st.file_uploader("Choose a file")
+image_bytes = np.asarray(bytearray(img_file.read()), dtype=np.uint8)
+img = cv2.imdecode(image_bytes, 1)
+st.image(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), caption="Uploaded Image", use_column_width=True)
+st.write("Image shape:", img.shape)
 
 # Create Streamlit app
 st.write("Calculate new values of BXnew and BYnew")
@@ -67,10 +71,7 @@ for i in range(5):
     st.write("Final results:")
     st.write(f"BXnew={BXnew}")
     st.write(f"BYnew={BYnew}")
-    image_bytes = np.asarray(bytearray(img_file.read()), dtype=np.uint8)
-    img = cv2.imdecode(image_bytes, 1)
-    st.image(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), caption="Uploaded Image", use_column_width=True)
-    st.write("Image shape:", img.shape)
+    
 
     #Old Coordinates
     old_translated_img_1 = translation(img, oldX[0], oldY[0])
