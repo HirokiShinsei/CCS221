@@ -176,21 +176,21 @@ rotated_rectangular_prism = rotate_object(translated_rectangular_prism, rot_x, r
 
 # plot original and transformed objects
 st.write("Triangular Prism")
-_plt_basic_object_(init_triangular_prism, 1)
+_plt_basic_object_(init_triangular_prism, points)
 _plt_basic_object_(translated_triangular_prism)
 _plt_basic_object_(rotated_triangular_prism)
 
 st.write("Pyramid")
-_plt_basic_object_(init_pyramid)
+_plt_basic_object_(init_pyramid, points2)
 _plt_basic_object_(translated_pyramid)
 _plt_basic_object_(rotated_pyramid)
 
 st.write("Cube")
-_plt_basic_object_(init_cube)
+_plt_basic_object_(init_cube,points_cube)
 _plt_basic_object_(translated_cube)
 _plt_basic_object_(rotated_cube)
 
 st.write("Rectangular Prism")
-_plt_basic_object_(init_rectangular_prism)
+_plt_basic_object_(init_rectangular_prism, points3)
 _plt_basic_object_(translated_rectangular_prism)
 _plt_basic_object_(rotated_rectangular_prism)
