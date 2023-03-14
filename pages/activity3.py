@@ -80,6 +80,9 @@ def shear_Y(img, shearY):
 
 def main():
     
+    st.title("Image Transformation")
+    
+    
     #Image Upload
     img_file = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
     
