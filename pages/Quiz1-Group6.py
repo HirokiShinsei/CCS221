@@ -29,7 +29,7 @@ def translation(img, tx, ty):
 
 #Main
 
-st.title("Test Run!")
+st.title("Quiz 1 - Transformation")
 oldX = [2,3,4,5,6]
 oldY = [5,6,7,8,9]
 BXnew = []
