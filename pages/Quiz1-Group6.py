@@ -34,8 +34,8 @@ oldX = [2,3,4,5,6]
 oldY = [5,6,7,8,9]
 BXnew = []
 BYnew = []
-tx_1 = int(input("Enter X Value: "))
-ty_1 = int(input("Enter Y Value: "))
+tx_1 = st.number_input("Enter X Value: ")
+ty_1 = st.number_input("Enter Y Value: ")
 
 incr = 50
 
@@ -52,25 +52,28 @@ st.title("Image Transformation")
 
 #Image Upload
 img_file = st.file_uploader("Choose a file")
-image_bytes = np.asarray(bytearray(img_file.read()), dtype=np.uint8)
-img = cv2.imdecode(image_bytes, 1)
-st.image(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), caption="Uploaded Image", use_column_width=True)
-st.write("Image shape:", img.shape)
 
-# Create Streamlit app
-st.write("Calculate new values of BXnew and BYnew")
-for i in range(5):
-    incr += 50
-    BXnew_n = oldX[i] + tx_1 + incr
-    BYnew_n = oldY[i] + ty_1 + incr
-    BXnew.append(BXnew_n)
-    BYnew.append(BYnew_n)
-    st.write(f"i={i}: BXnew_n={BXnew_n}, BYnew_n={BYnew_n}")
+if img_file is not None:
+    
+    image_bytes = np.asarray(bytearray(img_file.read()), dtype=np.uint8)
+    img = cv2.imdecode(image_bytes, 1)
+    st.image(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), caption="Uploaded Image", use_column_width=True)
+    st.write("Image shape:", img.shape)
+    
+    # Create Streamlit app
+    st.write("Calculate new values of BXnew and BYnew")
+    for i in range(5):
+        incr += 0
+        BXnew_n = oldX[i] + tx_1 + incr
+        BYnew_n = oldY[i] + ty_1 + incr
+        BXnew.append(BXnew_n)
+        BYnew.append(BYnew_n)
+        st.write(f"i = {i}: BXnew_n = {BXnew_n}, BYnew_n = {BYnew_n}")
 
-# Display results
+    # Display results
     st.write("Final results:")
-    st.write(f"BXnew={BXnew}")
-    st.write(f"BYnew={BYnew}")
+    st.write(f"BXnew = {BXnew}")
+    st.write(f"BYnew = {BYnew}")
     
 
     #Old Coordinates
