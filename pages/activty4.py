@@ -176,7 +176,7 @@ rotated_rectangular_prism = rotate_object(translated_rectangular_prism, rot_x, r
 
 # plot original and transformed objects
 st.write("Triangular Prism")
-_plt_basic_object_(init_triangular_prism)
+_plt_basic_object_(init_triangular_prism, 1)
 _plt_basic_object_(translated_triangular_prism)
 _plt_basic_object_(rotated_triangular_prism)
 
