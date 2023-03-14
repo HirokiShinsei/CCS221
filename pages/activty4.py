@@ -9,13 +9,13 @@ import tensorflow as tf
 tf.compat.v1.disable_eager_execution()
 
 
-def _plt_basic_object_(points):
-    tri = Delaunay(points).convex_hull
+def _plt_basic_object_(sess, points):
+    tri = Delaunay(sess.run(points)).convex_hull
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(111, projection='3d')
     s = ax.plot_trisurf(points[:, 0], points[:, 1], points[:, 2],
-                        triangles=tri,
-                        shade=True, cmap=cm.rainbow, lw=0.5)
+                         triangles=tri,
+                         shade=True, cmap=cm.rainbow, lw=0.5)
     ax.set_xlim3d(-5, 5)
     ax.set_ylim3d(-5, 5)
     ax.set_zlim3d(-5, 5)
