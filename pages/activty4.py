@@ -9,16 +9,18 @@ import tensorflow as tf
 tf.compat.v1.disable_eager_execution()
 
 
-def _plt_basic_object_(init_points, translated_points):
-    tri = Delaunay(translated_points).convex_hull
+def _plt_basic_object_(init_points, translated_points=None):
+    tri = Delaunay(init_points).convex_hull
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(111, projection='3d')
     s1 = ax.plot_trisurf(init_points[:, 0], init_points[:, 1], init_points[:, 2],
                          triangles=tri,
                          shade=True, cmap=cm.rainbow, lw=0.5, alpha=0.5)
-    s2 = ax.plot_trisurf(translated_points[:, 0], translated_points[:, 1], translated_points[:, 2],
-                         triangles=tri,
-                         shade=True, cmap=cm.rainbow, lw=0.5)
+    if translated_points is not None:
+        tri = Delaunay(translated_points).convex_hull
+        s2 = ax.plot_trisurf(translated_points[:, 0], translated_points[:, 1], translated_points[:, 2],
+                             triangles=tri,
+                             shade=True, cmap=cm.rainbow, lw=0.5)
     ax.set_xlim3d(-10, 10)
     ax.set_ylim3d(-10, 10)
     ax.set_zlim3d(-10, 10)
@@ -179,21 +181,18 @@ rotated_rectangular_prism = rotate_object(translated_rectangular_prism, rot_x, r
 
 # plot original and transformed objects
 st.write("Triangular Prism")
-_plt_basic_object_(init_triangular_prism)
-_plt_basic_object_(translated_triangular_prism)
-_plt_basic_object_(rotated_triangular_prism)
+_plt_basic_object_(init_triangular_prism, translated_triangular_prism)
+_plt_basic_object_(init_triangular_prism, rotated_triangular_prism)
 
 st.write("Pyramid")
-_plt_basic_object_(init_pyramid)
-_plt_basic_object_(translated_pyramid)
-_plt_basic_object_(rotated_pyramid)
+_plt_basic_object_(init_pyramid, translated_pyramid)
+_plt_basic_object_(init_pyramid, rotated_pyramid)
+
 
 st.write("Cube")
-_plt_basic_object_(init_cube)
-_plt_basic_object_(translated_cube)
-_plt_basic_object_(rotated_cube)
+_plt_basic_object_(init_cube, translated_cube)
+_plt_basic_object_(init_cube, rotated_cube)
 
 st.write("Rectangular Prism")
-_plt_basic_object_(init_rectangular_prism)
-_plt_basic_object_(translated_rectangular_prism)
-_plt_basic_object_(rotated_rectangular_prism)
+_plt_basic_object_(init_rectangular_prism, translated_rectangular_prism)
+_plt_basic_object_(init_rectangular_prism, rotated_rectangular_prism)
