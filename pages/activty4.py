@@ -155,23 +155,23 @@ st.header("Original and Translated Objects")
 st.write("Use the sliders to translate the objects in the x, y, and z directions.")
 
 # creates sliders to adjust translation amount
-translation_x = st.slider("X", -5.0, 5.0, 1.0, 0.1)
-translation_y = st.slider("Y", -5.0, 5.0, 2.0, 0.1)
-translation_z = st.slider("Z", -5.0, 5.0, 3.0, 0.1)
+translation_x = st.slider("X", -10.0, 10.0, 1.0, 0.1)
+translation_y = st.slider("Y", -10.0, 10.0, 2.0, 0.1)
+translation_z = st.slider("Z", -10.0, 10.0, 3.0, 0.1)
 
 # creates sliders for rotation angles
 rot_x = st.slider("Rotate around X-axis", -180, 180, 0, 1)
 rot_y = st.slider("Rotate around Y-axis", -180, 180, 0, 1)
 rot_z = st.slider("Rotate around Z-axis", -180, 180, 0, 1)
 
-# create translated objects
+# creates translated objects
 translation_amount = tf.constant([translation_x, translation_y, translation_z], dtype=tf.float32)
 translated_triangular_prism = translate_obj(points, translation_amount)
 translated_pyramid = translate_obj(points2, translation_amount)
 translated_cube = translate_obj(points_cube, translation_amount)
 translated_rectangular_prism = translate_obj(points3, translation_amount)
 
-# run TensorFlow session to get translated objects
+# runs TensorFlow session to get translated objects
 with tf.compat.v1.Session() as session:
     translated_triangular_prism = session.run(translated_triangular_prism)
     translated_pyramid = session.run(translated_pyramid)
@@ -191,36 +191,20 @@ with tf.compat.v1.Session() as session:
     rotated_rectangular_prism = session.run(rotated_rectangular_prism)
 
 # plot original and transformed objects
-st.write("Triangular Prism")
-_plt_basic_object_(tf.constant(init_triangular_prism, dtype=tf.float32), 
-                    tf.constant(translated_triangular_prism, dtype=tf.float32))
-
-st.write("Rotated Triangular Prism")
+st.title("Triangular Prism")
 _plt_basic_object_(tf.constant(init_triangular_prism, dtype=tf.float32), 
                     tf.constant(rotated_triangular_prism, dtype=tf.float32))
 
 
-st.write("Translated Pyramid")
-_plt_basic_object_(tf.constant(init_pyramid, dtype=tf.float32), 
-                    tf.constant(translated_pyramid, dtype=tf.float32))
-
-st.write("Rotated Pyramid")
+st.title("Pyramid")
 _plt_basic_object_(tf.constant(init_pyramid, dtype=tf.float32), 
                     tf.constant(rotated_pyramid, dtype=tf.float32))
 
-st.write("Translated Cube")
-_plt_basic_object_(tf.constant(init_cube,dtype=tf.float32), 
-                   tf.constant(translated_cube, dtype=tf.float32))
-
-st.write("Rotated Cube")
+st.title("Cube")
 _plt_basic_object_(tf.constant(init_cube,dtype=tf.float32), 
                    tf.constant(rotated_cube, dtype=tf.float32))
 
 
-st.write("Rectangular Prism")
-_plt_basic_object_(tf.constant(init_rectangular_prism,dtype=tf.float32), 
-                   tf.constant(translated_rectangular_prism, dtype=tf.float32))
-
-st.write("Rotated Rectangular Prism")
+st.title("Rectangular Prism")
 _plt_basic_object_(tf.constant(init_rectangular_prism,dtype=tf.float32), 
                    tf.constant(rotated_rectangular_prism, dtype=tf.float32))
