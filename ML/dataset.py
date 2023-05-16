@@ -24,47 +24,52 @@ raw_frames_type_3 = []
 raw_frames_type_4 = []
 
 while CAMERA.isOpened():
-    
-    #read a new camera frame
-    
+    # read a new camera frame
     ret, frame = CAMERA.read()
     
-    #flip
+    # flip
     frame = cv2.flip(frame, 1)
     
-    #rescale the images output
-    aspect = frame.shape[1]/float(frame.shape[0])
+    # rescale the image output
+    aspect = frame.shape[1] / float(frame.shape[0])
     res = int(aspect * camera_height)
-    frame = cv2.resize(frame,(res, camera_height))
+    frame = cv2.resize(frame, (res, camera_height))
     
-    #the green rectable
+    # calculate the new coordinates for the rectangle
+    # rectangle_x1 = int(150 * res / frame.shape[1])
+    # rectangle_y1 = int(50 * camera_height / frame.shape[0])
+    # rectangle_x2 = int(650 * res / frame.shape[1])
+    # rectangle_y2 = int(425 * camera_height / frame.shape[0])
+    
+    # the green rectangle
     cv2.rectangle(frame, (150,50), (650, 425), (0,255,0), 2)
     
-    #show the frame
+    # show the frame
     cv2.imshow('Capturing', frame)
     
-    #controls q = quit/ s = capturing
-    key = cv2.waitKey(0) & 0xFF
+    # controls q = quit/ s = capturing
+    key = cv2.waitKey(1) & 0xFF
     
-    if key & 0xFF == ord('q'):
+    if key == ord('q'):
         break
-    elif key & 0xFF == ord('1'):
-        #save the raw frames to frame
+    elif key == ord('1'):
+        # save the raw frames to frame
         raw_frames_type_1.append(frame)
-    elif key & 0xFF == ord('2'):
+        print("Captured type 1 frame.")
+    elif key == ord('2'):
         raw_frames_type_2.append(frame)
-    elif key & 0xFF == ord('3'):
+        print("Captured type 2 frame.")
+    elif key == ord('3'):
         raw_frames_type_3.append(frame)
-    elif key & 0xFF == ord('4'):
+        print("Captured type 3 frame.")
+    elif key == ord('4'):
         raw_frames_type_4.append(frame)
-        
-    #preview
-    plt.imshow(frame)
-    plt.show()
+        print("Captured type 4 frame.")
 
-#camera
+# camera
 CAMERA.release()
-cv2.destroyAllWindows()    
+cv2.destroyAllWindows()
+
 
 save_width = 339
 save_height = 400
@@ -82,7 +87,7 @@ print ('img4: ', len(raw_frames_type_4))
 for i, frame in enumerate(raw_frames_type_1):
     
     #get roi
-    roi = frame[75+2:425-2, 300+2:650-2]
+    roi = frame[50:425, 150:650]
     
     #parse brg to rgb
     roi = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
@@ -100,7 +105,7 @@ for i, frame in enumerate(raw_frames_type_1):
 for i, frame in enumerate(raw_frames_type_2):
     
     #get roi
-    roi = frame[75+2:425-2, 300+2:650-2]
+    roi = frame[50:425, 150:650]
     
     #parse brg to rgb
     roi = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
@@ -119,7 +124,7 @@ for i, frame in enumerate(raw_frames_type_2):
 for i, frame in enumerate(raw_frames_type_3):
     
     #get roi
-    roi = frame[75+2:425-2, 300+2:650-2]
+    roi = frame[50:425, 150:650]
     
     #parse brg to rgb
     roi = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
@@ -137,7 +142,7 @@ for i, frame in enumerate(raw_frames_type_3):
 for i, frame in enumerate(raw_frames_type_4):
     
     #get roi
-    roi = frame[75+2:425-2, 300+2:650-2]
+    roi = frame[50:425, 150:650]
     
     #parse brg to rgb
     roi = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
@@ -241,12 +246,10 @@ X_type_2 = np.array(images_type_2)
 X_type_3 = np.array(images_type_3)
 X_type_4 = np.array(images_type_4)
 
-(13, 96, 96, 3)
-(23, 96, 96, 3)
-(14, 96, 96, 3)
-(22, 96, 96, 3)
-
-X_type_2
+X_type_1=(13, 96, 96, 3)
+X_type_2=(23, 96, 96, 3)
+X_type_3=(14, 96, 96, 3)
+X_type_4=(22, 96, 96, 3)
 
 X = np.concatenate((X_type_1, X_type_2), axis=0)
 
@@ -260,9 +263,7 @@ if len(X_type_4):
 
 X = X/255.0
 
-X.shape
-
-(72, 96, 96, 3)
+X.shape=(72, 96, 96, 3)
 
 from keras.utils import to_categorical
 
@@ -281,9 +282,7 @@ if len(y_type_4):
     
 y = to_categorical(y, num_classes=len(class_names))
 
-y.shape
-
-(72, 4)
+y.shape=(72, 4)
 
 #Default Parameters
 
@@ -396,12 +395,12 @@ def plt_show(img):
     plt.show()
     
 #learning data
-# cup = 
+knife = "img_1/10.png"
 # spoon = 
 # fork = 
 # mouse = 
 
-imgs = [cup, spoon, fork, mouse]
+imgs = [knife]
 
 # def predict_(img_path):
 
@@ -423,5 +422,78 @@ for i in range(len(imgs)):
 cm = confusion_matrix(classes, predicted_classes)
 f = sns.heatmap(cm, xticklabels=class_names, yticklabels=predicted_classes, annot=True)
 
-type_1 = preprocessing.image.load_img('cup.jpg', target_size=(width, height))
+type_1 = preprocessing.image.load_img('img_1/{}.png', target_size=(width, height))
+
+plt.imshow(type_1)
+plt.show()
+
+type_1_x = np.expand_dims(type_1, axis=0)
+predictions = model.predict(type_1_x)
+index = np.argmax(predictions)
+
+print(class_names[index])
+
+
+# Live predictions using camera
+
+from keras.applications import inception_v3
+import time 
+
+CAMERA = cv2.VideoCapture(0)
+camera_height = 500
+
+while (True):
+    _, frame = CAMERA.read()
     
+    #flip
+    frame = cv2.flip(frame, 1)
+    
+    # Rescale the image output
+    aspect = frame.shape[1] / float(frame.shape[0])
+    res = int(aspect * camera_height) # landscape orientation - wide image
+    frame = cv2.resize(frame, (res, camera_height))
+    
+    # Get ROI
+    roi = frame[50:425, 150:650]
+    
+    # Parse BRG to RGB
+    roi = v2.cvtColor(roi, cv2.COLOR_BGR2RGB)
+    
+    # Adjust alignment
+    roi = cv2.resize(roi, (width, height))
+    roi = np.expand_dims(roi, axis=0)
+    
+    predictions = model.predict(roi)
+    type_1_x, type_2_x, type_3_x, type_4_x = predictions[0]
+    
+    # Green rectangle
+    cv2.rectangle(frame, (150, 50), (650, 425), (0, 255, 0), 2)
+    
+    # Predictions/Labels
+    type_1_text = '{} - {}%'.format(class_names[0], int(type_1_x*100))
+    cv2.putText(frame, type_1_text, (70, 210), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+    
+    type_2_text = '{} - {}%'.format(class_names[1], int(type_2_x*100))
+    cv2.putText(frame, type_2_text, (70, 235), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+    
+    type_3_text = '{} - {}%'.format(class_names[2], int(type_3_x*100))
+    cv2.putText(frame, type_3_text, (70, 255), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+    
+    type_4_text = '{} - {}%'.format(class_names[3], int(type_4_x*100))
+    cv2.putText(frame, type_4_text, (70, 275), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+    
+    cv2.imshow('OReal time object detection', frame)
+    
+    # Controls q = quit / s = capturing
+    key = cv2.waitKey(1)
+    
+    if key & 0xFF == ord('q'):
+        break
+    
+    # Preview
+    plt.imshow(frame)
+    plt.show()
+    
+    # Camera
+    CAMERA.release()
+    cv2.destroyAllWindows()
