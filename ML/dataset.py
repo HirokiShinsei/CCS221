@@ -609,61 +609,115 @@ print(class_names[index])
 from keras.applications import inception_v3
 import time 
 
+# CAMERA = cv2.VideoCapture(0)
+# camera_height = 500
+
+# while (True):
+#     _, frame = CAMERA.read()
+    
+#     #flip
+#     frame = cv2.flip(frame, 1)
+    
+#     # Rescale the image output
+#     aspect = frame.shape[1] / float(frame.shape[0])
+#     res = int(aspect * camera_height) # landscape orientation - wide image
+#     frame = cv2.resize(frame, (res, camera_height))
+    
+#     # Get ROI
+#     roi = frame[50:425, 150:650]
+    
+#     # Parse BRG to RGB
+#     roi = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
+    
+#     # Adjust alignment
+#     roi = cv2.resize(roi, (width, height))
+#     roi = np.expand_dims(roi, axis=0)
+    
+#     predictions = model.predict(roi)
+#     type_1_x, type_2_x, type_3_x, type_4_x = predictions[0]
+    
+#     # Green rectangle
+#     cv2.rectangle(frame, (150, 50), (650, 425), (0, 255, 0), 2)
+    
+#     # Predictions/Labels
+#     type_1_text = '{} - {}%'.format(class_names[0], int(type_1_x*100))
+#     cv2.putText(frame, type_1_text, (70, 210), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+    
+#     type_2_text = '{} - {}%'.format(class_names[1], int(type_2_x*100))
+#     cv2.putText(frame, type_2_text, (70, 235), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+    
+#     type_3_text = '{} - {}%'.format(class_names[2], int(type_3_x*100))
+#     cv2.putText(frame, type_3_text, (70, 255), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+    
+#     type_4_text = '{} - {}%'.format(class_names[3], int(type_4_x*100))
+#     cv2.putText(frame, type_4_text, (70, 275), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+    
+#     cv2.imshow('OReal time object detection', frame)
+    
+#     # Controls q = quit / s = capturing
+#     key = cv2.waitKey(1)
+    
+#     if key & 0xFF == ord('q'):
+#         break
+    
+#     # Preview
+#     plt.imshow(frame)
+#     plt.show()
+    
+# # Camera
+# CAMERA.release()
+# cv2.destroyAllWindows()
+
 CAMERA = cv2.VideoCapture(0)
 camera_height = 500
 
-while (True):
+while True:
     _, frame = CAMERA.read()
-    
-    #flip
+
+    # Flip
     frame = cv2.flip(frame, 1)
-    
+
     # Rescale the image output
     aspect = frame.shape[1] / float(frame.shape[0])
-    res = int(aspect * camera_height) # landscape orientation - wide image
+    res = int(aspect * camera_height)  # Landscape orientation - wide image
     frame = cv2.resize(frame, (res, camera_height))
-    
+
     # Get ROI
     roi = frame[50:425, 150:650]
-    
+
     # Parse BRG to RGB
     roi = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
-    
+
     # Adjust alignment
     roi = cv2.resize(roi, (width, height))
     roi = np.expand_dims(roi, axis=0)
-    
+
     predictions = model.predict(roi)
     type_1_x, type_2_x, type_3_x, type_4_x = predictions[0]
-    
+
     # Green rectangle
     cv2.rectangle(frame, (150, 50), (650, 425), (0, 255, 0), 2)
-    
+
     # Predictions/Labels
-    type_1_text = '{} - {}%'.format(class_names[0], int(type_1_x*100))
+    type_1_text = '{} - {}%'.format(class_names[0], int(type_1_x * 100))
     cv2.putText(frame, type_1_text, (70, 210), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
-    
-    type_2_text = '{} - {}%'.format(class_names[1], int(type_2_x*100))
+
+    type_2_text = '{} - {}%'.format(class_names[1], int(type_2_x * 100))
     cv2.putText(frame, type_2_text, (70, 235), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
-    
-    type_3_text = '{} - {}%'.format(class_names[2], int(type_3_x*100))
+
+    type_3_text = '{} - {}%'.format(class_names[2], int(type_3_x * 100))
     cv2.putText(frame, type_3_text, (70, 255), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
-    
-    type_4_text = '{} - {}%'.format(class_names[3], int(type_4_x*100))
+
+    type_4_text = '{} - {}%'.format(class_names[3], int(type_4_x * 100))
     cv2.putText(frame, type_4_text, (70, 275), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
-    
-    cv2.imshow('OReal time object detection', frame)
-    
-    # Controls q = quit / s = capturing
+
+    cv2.imshow('Real-time object detection', frame)
+
+    # Controls q = quit
     key = cv2.waitKey(1)
-    
     if key & 0xFF == ord('q'):
         break
-    
-    # Preview
-    plt.imshow(frame)
-    plt.show()
-    
-# Camera
+
+# Release the camera
 CAMERA.release()
 cv2.destroyAllWindows()
