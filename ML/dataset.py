@@ -8,10 +8,12 @@ from keras.models import Sequential
 from keras.layers.core import Activation, Dropout, Flatten, Dense
 from keras.layers.convolutional import Convolution2D, MaxPooling2D
 from keras.optimizers import Adam
+from PIL import Image
 
 # %matplotlib inline
 
-class_names = ['CUP','SPOON','FORK','MOUSE']
+# class_names = ['CUP','SPOON','FORK','MOUSE']
+class_names = ['KNIFE','WATER_BOTTLE','PHONE','GLASS']
 
 #creating realtime dataset
 
@@ -246,10 +248,17 @@ X_type_2 = np.array(images_type_2)
 X_type_3 = np.array(images_type_3)
 X_type_4 = np.array(images_type_4)
 
-X_type_1=(13, 96, 96, 3)
-X_type_2=(23, 96, 96, 3)
-X_type_3=(14, 96, 96, 3)
-X_type_4=(22, 96, 96, 3)
+# X_type_1=(13, 96, 96, 3)
+# X_type_2=(23, 96, 96, 3)
+# X_type_3=(14, 96, 96, 3)
+# X_type_4=(22, 96, 96, 3)
+
+(13, 96, 96, 3)
+(23, 96, 96, 3)
+(14, 96, 96, 3)
+(22, 96, 96, 3)
+
+X_type_2
 
 X = np.concatenate((X_type_1, X_type_2), axis=0)
 
@@ -263,7 +272,8 @@ if len(X_type_4):
 
 X = X/255.0
 
-X.shape=(72, 96, 96, 3)
+X.shape
+(72, 96, 96, 3)
 
 from keras.utils import to_categorical
 
@@ -282,7 +292,8 @@ if len(y_type_4):
     
 y = to_categorical(y, num_classes=len(class_names))
 
-y.shape=(72, 4)
+y.shape
+(72, 4)
 
 #Default Parameters
 
@@ -355,35 +366,35 @@ model = build_model()
 
 model.summary()
 
-history = model.fit(X, y, validation_split=0.10, epochs=10, batch_size=5)
+# history = model.fit(X, y, validation_split=0.10, epochs=10, batch_size=5)
 
-print (history)
+# print (history)
 
 #Model evaluation
-scores = model.evaluate(X, y, verbose=1)
-print ("Accuracy: %.2f%%" %(scores[1]*100))
+# scores = model.evaluate(X, y, verbose=1)
+# print ("Accuracy: %.2f%%" %(scores[1]*100))
 
-plt.plot(history.history['accuracy'])
-plt.plot(history.history['val_accuracy'])
-plt.title('Model Accuracy')
-plt.ylabel('loss and accuracy')
-plt.xlabel('epoch')
-plt.legend(['train', 'test'], loc='upper left')
-plt.show()
+# plt.plot(history.history['accuracy'])
+# plt.plot(history.history['val_accuracy'])
+# plt.title('Model Accuracy')
+# plt.ylabel('loss and accuracy')
+# plt.xlabel('epoch')
+# plt.legend(['train', 'test'], loc='upper left')
+# plt.show()
 
-plt.plot(history.history['loss'])
-plt.title('Model Loss')
-plt.ylabel('loss')
-plt.xlabel('epoch')
-plt.legend(['train', 'test'], loc='upper left')
-plt.show()
+# plt.plot(history.history['loss'])
+# plt.title('Model Loss')
+# plt.ylabel('loss')
+# plt.xlabel('epoch')
+# plt.legend(['train', 'test'], loc='upper left')
+# plt.show()
 
-plt.plot(history.history['accuracy'])
-plt.title('Model Accuracy')
-plt.ylabel('accuracy')
-plt.xlabel('epoch')
-plt.legend(['train', 'test'], loc='upper left')
-plt.show()
+# plt.plot(history.history['accuracy'])
+# plt.title('Model Accuracy')
+# plt.ylabel('accuracy')
+# plt.xlabel('epoch')
+# plt.legend(['train', 'test'], loc='upper left')
+# plt.show()
 
 
 #prediction
@@ -395,34 +406,55 @@ def plt_show(img):
     plt.show()
     
 #learning data
-knife = "img_1/10.png"
-# spoon = 
-# fork = 
-# mouse = 
+knife = "img_1.png"
+water_bottle = "img_2.png"
+phone = "img_3.png"
+glass = "img_4.png"
 
-imgs = [knife]
+imgs = [knife, water_bottle, phone, glass]
 
 # def predict_(img_path):
 
 classes = None
 predicted_classes = []
 
+# for i in range(len(imgs)):
+#     # type_ = Image.open(imgs[i], target_size=(width, height))
+#     type_ = Image.open(imgs[i], target_size=(width, height))
+#     plt.imshow(type_)
+#     plt.show()
+    
+#     type_x = np.expand_dims(type_, axis=0)
+#     prediction = model.predict(type_x)
+#     index = np.argmax(prediction)
+#     print(class_names[index])
+#     classes = class_names[index]
+#     predicted_classes.append(class_names[index])
+
 for i in range(len(imgs)):
-    type_ = preprocessing.image.load_img(imgs[i], target_size=(width, height))
-    plt.imshow(type_)
+    # Load and resize the image
+    image = Image.open(imgs[i]).resize((width, height))
+    # Convert the image to an array
+    array = np.array(image)
+    
+    # Display the image
+    plt.imshow(array)
     plt.show()
     
-    type_x = np.expand_dims(type_, axis=0)
+    # Expand dimensions if needed
+    type_x = np.expand_dims(image, axis=0)
+    
+    # Make predictions with the model
     prediction = model.predict(type_x)
     index = np.argmax(prediction)
-    print(class_names[index])
-    classes = class_names[index]
-    predicted_classes.append(class_names[index])
+    predicted_class = class_names[index]
+    print(predicted_class)
+    predicted_classes.append(predicted_class)
     
 cm = confusion_matrix(classes, predicted_classes)
 f = sns.heatmap(cm, xticklabels=class_names, yticklabels=predicted_classes, annot=True)
 
-type_1 = preprocessing.image.load_img('img_1/{}.png', target_size=(width, height))
+type_1 = Image.open('img_1.png', target_size=(width, height))
 
 plt.imshow(type_1)
 plt.show()
@@ -457,7 +489,7 @@ while (True):
     roi = frame[50:425, 150:650]
     
     # Parse BRG to RGB
-    roi = v2.cvtColor(roi, cv2.COLOR_BGR2RGB)
+    roi = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
     
     # Adjust alignment
     roi = cv2.resize(roi, (width, height))
