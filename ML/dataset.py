@@ -3,6 +3,8 @@ import numpy as np
 import cv2 
 from glob import glob
 from keras import preprocessing
+# from keras.preprocessing import image
+from keras.utils import load_img, img_to_array, array_to_img
 import os
 from keras.models import Sequential
 from keras.layers.core import Activation, Dropout, Flatten, Dense
@@ -174,158 +176,165 @@ images_type_2 = []
 images_type_3 = []
 images_type_4 = []
 
-# Load images from 'img_1' directory
-for image_path in glob('img_1/*.png'):
-    img = Image.open(image_path).convert('RGB')
-    img = img.resize((width, height))
-    img_array = np.array(img)
-    images_type_1.append(img_array)
-    # labels.append(class_index)
+# # Load images from 'img_1' directory
+# for image_path in glob('img_1/*.png'):
+#     img = Image.open(image_path).convert('RGB')
+#     img = img.resize((width, height))
+#     img_array = np.array(img)
+#     images_type_1.append(img_array)
+#     # labels.append(class_index)
 
-# Load images from 'img_2' directory
+# # Load images from 'img_2' directory
+# for image_path in glob('img_2/*.*'):
+#     img = Image.open(image_path).convert('RGB')
+#     img = img.resize((width, height))
+#     img_array = np.array(img)
+#     images_type_2.append(img_array)
+#     # labels.append(class_index)
+
+# # Load images from 'img_3' directory
+# for image_path in glob('img_3/*.*'):
+#     img = Image.open(image_path).convert('RGB')
+#     img = img.resize((width, height))
+#     img_array = np.array(img)
+#     images_type_3.append(img_array)
+#     # labels.append(class_index)
+
+# # Load images from 'img_4' directory
+# for image_path in glob('img_4/*.*'):
+#     img = Image.open(image_path).convert('RGB')
+#     img = img.resize((width, height))
+#     img_array = np.array(img)
+#     images_type_4.append(img_array)
+#     # labels.append(class_index)
+
+# =============================================================================================
+
+for image_path in glob('img_1/*.*'):
+    image = load_img(image_path, target_size=(width, height))
+    x = img_to_array(image)
+    
+    images_type_1.append(x)
+
 for image_path in glob('img_2/*.*'):
-    img = Image.open(image_path).convert('RGB')
-    img = img.resize((width, height))
-    img_array = np.array(img)
-    images_type_2.append(img_array)
-    # labels.append(class_index)
+    image = load_img(image_path, target_size=(width, height))
+    x = img_to_array(image)
+    
+    images_type_2.append(x)
 
-# Load images from 'img_3' directory
 for image_path in glob('img_3/*.*'):
-    img = Image.open(image_path).convert('RGB')
-    img = img.resize((width, height))
-    img_array = np.array(img)
-    images_type_3.append(img_array)
-    # labels.append(class_index)
+    image = load_img(image_path, target_size=(width, height))
+    x = img_to_array(image)
+    
+    images_type_3.append(x)
 
-# Load images from 'img_4' directory
 for image_path in glob('img_4/*.*'):
-    img = Image.open(image_path).convert('RGB')
-    img = img.resize((width, height))
-    img_array = np.array(img)
-    images_type_4.append(img_array)
-    # labels.append(class_index)
+    image = load_img(image_path, target_size=(width, height))
+    x = img_to_array(image)
+    
+    images_type_4.append(x)
 
 print('Shape of images_type_1:', images_type_1[0].shape)
 print('Shape of images_type_2:', images_type_2[0].shape)
 print('Shape of images_type_3:', images_type_3[0].shape)
 print('Shape of images_type_4:', images_type_4[0].shape)
-
-# for image_path in glob('Github/CCS221/ML/img_1/*.*'):
-#     image = preprocessing.image.load_img(image_path, target_size=(width, height))
-#     x = preprocessing.image.img_to_array(image)
+# ====================================================================
     
-#     images_type_1.append(x)
+# plt.figure(figsize=(12,8))
 
-# for image_path in glob('Github/CCS221/ML/img_2/*.*'):
-#     image = preprocessing.image.load_img(image_path, target_size=(width, height))
-#     x = preprocessing.image.img_to_array(image)
-    
-#     images_type_2.append(x)
-
-# for image_path in glob('Github/CCS221/ML/img_3/*.*'):
-#     image = preprocessing.image.load_img(image_path, target_size=(width, height))
-#     x = preprocessing.image.img_to_array(image)
-    
-#     images_type_3.append(x)
-
-# for image_path in glob('Github/CCS221/ML/img_4/*.*'):
-#     image = preprocessing.image.load_img(image_path, target_size=(width, height))
-#     x = preprocessing.image.img_to_array(image)
-    
-#     images_type_4.append(x)
-    
-plt.figure(figsize=(12,8))
-
-# Generate visualization for images_type_1
-for i, x in enumerate(images_type_1[:5]):
-    plt.subplot(1, 5, i+1)
-    image = Image.fromarray(np.uint8(x))
-    plt.imshow(image)
-    plt.axis('off')
-    plt.title('{} image'.format(class_names[0]))
-plt.show()
-
-plt.figure(figsize=(12, 8))
-
-# Generate visualization for images_type_2
-for i, x in enumerate(images_type_2[:5]):
-    plt.subplot(1, 5, i+1)
-    image = Image.fromarray(np.uint8(x))
-    plt.imshow(image)
-    plt.axis('off')
-    plt.title('{} image'.format(class_names[1]))
-plt.show()
-
-plt.figure(figsize=(12, 8))
-
-# Generate visualization for images_type_3
-for i, x in enumerate(images_type_3[:5]):
-    plt.subplot(1, 5, i+1)
-    image = Image.fromarray(np.uint8(x))
-    plt.imshow(image)
-    plt.axis('off')
-    plt.title('{} image'.format(class_names[2]))
-plt.show()
-
-plt.figure(figsize=(12, 8))
-
-# Generate visualization for images_type_4
-for i, x in enumerate(images_type_4[:5]):
-    plt.subplot(1, 5, i+1)
-    image = Image.fromarray(np.uint8(x))
-    plt.imshow(image)
-    plt.axis('off')
-    plt.title('{} image'.format(class_names[3]))
-plt.show()
-
+# # Generate visualization for images_type_1
 # for i, x in enumerate(images_type_1[:5]):
-    
-#     plt.subplot(1,5,i+1)
-#     image = preprocessing.image.array_to_img(x)
+#     plt.subplot(1, 5, i+1)
+#     image = Image.fromarray(np.uint8(x))
 #     plt.imshow(image)
-    
 #     plt.axis('off')
 #     plt.title('{} image'.format(class_names[0]))
+# plt.show()
 
-#     plt.show()
+# plt.figure(figsize=(12, 8))
 
-# plt.figure(figsize=(12,8))
-
+# # Generate visualization for images_type_2
 # for i, x in enumerate(images_type_2[:5]):
-    
-#     plt.subplot(1,5,i+1)
-#     image = preprocessing.image.array_to_img(x)
+#     plt.subplot(1, 5, i+1)
+#     image = Image.fromarray(np.uint8(x))
 #     plt.imshow(image)
-    
 #     plt.axis('off')
 #     plt.title('{} image'.format(class_names[1]))
-    
-#     plt.show()
-    
-# plt.figure(figsize=(12,8))
+# plt.show()
+
+# plt.figure(figsize=(12, 8))
+
+# # Generate visualization for images_type_3
 # for i, x in enumerate(images_type_3[:5]):
-    
-#     plt.subplot(1,5,i+1)
-#     image = preprocessing.image.array_to_img(x)
+#     plt.subplot(1, 5, i+1)
+#     image = Image.fromarray(np.uint8(x))
 #     plt.imshow(image)
-    
 #     plt.axis('off')
 #     plt.title('{} image'.format(class_names[2]))
-    
-#     plt.show()
+# plt.show()
 
-# plt.figure(figsize=(12,8))
+# plt.figure(figsize=(12, 8))
+
+# # Generate visualization for images_type_4
 # for i, x in enumerate(images_type_4[:5]):
-    
-#     plt.subplot(1,5,i+1)
-#     image = preprocessing.image.array_to_img(x)
+#     plt.subplot(1, 5, i+1)
+#     image = Image.fromarray(np.uint8(x))
 #     plt.imshow(image)
-    
 #     plt.axis('off')
 #     plt.title('{} image'.format(class_names[3]))
+# plt.show()
+
+# =====================================================================================
+
+plt.figure(figsize=(12,8))
+
+for i, x in enumerate(images_type_1[:5]):
     
-#     plt.show()
+    plt.subplot(1,5,i+1)
+    image = array_to_img(x)
+    plt.imshow(image)
+    
+    plt.axis('off')
+    plt.title('{} image'.format(class_names[0]))
+
+plt.show()
+
+plt.figure(figsize=(12,8))
+
+for i, x in enumerate(images_type_2[:5]):
+    
+    plt.subplot(1,5,i+1)
+    image = array_to_img(x)
+    plt.imshow(image)
+    
+    plt.axis('off')
+    plt.title('{} image'.format(class_names[1]))
+    
+plt.show()
+    
+plt.figure(figsize=(12,8))
+for i, x in enumerate(images_type_3[:5]):
+    
+    plt.subplot(1,5,i+1)
+    image = array_to_img(x)
+    plt.imshow(image)
+    
+    plt.axis('off')
+    plt.title('{} image'.format(class_names[2]))
+    
+plt.show()
+
+plt.figure(figsize=(12,8))
+for i, x in enumerate(images_type_4[:5]):
+    
+    plt.subplot(1,5,i+1)
+    image = array_to_img(x)
+    plt.imshow(image)
+    
+    plt.axis('off')
+    plt.title('{} image'.format(class_names[3]))
+    
+plt.show()
     
 
 # Prepare image to tensor
@@ -508,44 +517,94 @@ imgs = [fork, glasses, plate, spoon]
 
 classes = None
 predicted_classes = []
-
 true_labels = []
 
-for i in range(len(imgs)):
-    img = Image.open(imgs[i]).convert('RGB')
-    img = img.resize((width, height))
-    plt.imshow(img)
-    plt.show()
-    
-    type_x = np.expand_dims(img, axis=0)
-    prediction = model.predict(type_x)
-    index = np.argmax(prediction)
-    print(class_names[index])
-    classes = class_names[index]
-    predicted_classes.append(class_names[index])
-    
-    true_labels.append(class_names[i % len(class_names)])
-
-cm = confusion_matrix(true_labels, predicted_classes)
-f = sns.heatmap(cm, xticklabels=class_names, yticklabels=class_names, annot=True)
-
 # for i in range(len(imgs)):
-#     type_ = preprocessing.image.load_img(imgs[i], target_size=(width, height))
-#     plt.imshow(type_)
+#     img = Image.open(imgs[i]).convert('RGB')
+#     img = img.resize((width, height))
+#     plt.imshow(img)
 #     plt.show()
     
-#     type_x = np.expand_dims(type_, axis=0)
+#     type_x = np.expand_dims(img, axis=0)
 #     prediction = model.predict(type_x)
 #     index = np.argmax(prediction)
 #     print(class_names[index])
 #     classes = class_names[index]
 #     predicted_classes.append(class_names[index])
     
-# cm = confusion_matrix(classes, predicted_classes)
-# f = sns.heatmap(cm, xticklabels=class_names, yticklabels=predicted_classes, annot=True)
+#     true_labels.append(class_names[i % len(class_names)])
 
-type_1 = Image.open('img_1/10.png').convert('RGB')
-type_1 = type_1.resize((width, height))
+# cm = confusion_matrix(true_labels, predicted_classes)
+# f = sns.heatmap(cm, xticklabels=class_names, yticklabels=class_names, annot=True)
+
+for i in range(len(imgs)):
+    type_ = load_img(imgs[i], target_size=(width, height))
+    plt.imshow(type_)
+    plt.show()
+    
+    type_x = np.expand_dims(type_, axis=0)
+    prediction = model.predict(type_x)
+    index = np.argmax(prediction)
+    print(class_names[index])
+    classes = class_names[index]
+    predicted_classes.append(class_names[index])
+    
+    true_labels.append(class_names[i % len(class_names)])  # Append the true class to the true_labels list
+    
+cm = confusion_matrix(true_labels, predicted_classes)
+f = sns.heatmap(cm, xticklabels=class_names, yticklabels=predicted_classes, annot=True)
+
+# type_1 = Image.open('img_1/10.png').convert('RGB')
+# type_1 = type_1.resize((width, height))
+
+# plt.imshow(type_1)
+# plt.show()
+
+# type_1_x = np.expand_dims(type_1, axis=0)
+# predictions = model.predict(type_1_x)
+# index = np.argmax(predictions)
+
+# print(class_names[index])
+
+# type_2 = Image.open('img_2/16.png').convert('RGB')
+# type_2 = type_2.resize((width, height))
+
+# plt.imshow(type_2)
+# plt.show()
+
+# type_2_x = np.expand_dims(type_2, axis=0)
+# predictions = model.predict(type_2_x)
+# index = np.argmax(predictions)
+
+# print(class_names[index])
+
+# type_3 = Image.open('img_3/09.png').convert('RGB')
+# type_3 = type_3.resize((width, height))
+
+# plt.imshow(type_3)
+# plt.show()
+
+# type_3_x = np.expand_dims(type_3, axis=0)
+# predictions = model.predict(type_3_x)
+# index = np.argmax(predictions)
+
+# print(class_names[index])
+
+# type_4 = Image.open('img_4/10.png').convert('RGB')
+# type_4 = type_4.resize((width, height))
+
+# plt.imshow(type_4)
+# plt.show()
+
+# type_4_x = np.expand_dims(type_4, axis=0)
+# predictions = model.predict(type_4_x)
+# index = np.argmax(predictions)
+
+# print(class_names[index])
+
+# =====================================================================================
+
+type_1 = load_img('img_1/10.png', target_size=(width, height))
 
 plt.imshow(type_1)
 plt.show()
@@ -556,8 +615,7 @@ index = np.argmax(predictions)
 
 print(class_names[index])
 
-type_2 = Image.open('img_2/16.png').convert('RGB')
-type_2 = type_2.resize((width, height))
+type_2 = load_img('img_2/16.png', target_size=(width, height))
 
 plt.imshow(type_2)
 plt.show()
@@ -568,8 +626,7 @@ index = np.argmax(predictions)
 
 print(class_names[index])
 
-type_3 = Image.open('img_3/09.png').convert('RGB')
-type_3 = type_3.resize((width, height))
+type_3 = load_img('img_3/09.png', target_size=(width, height))
 
 plt.imshow(type_3)
 plt.show()
@@ -580,8 +637,7 @@ index = np.argmax(predictions)
 
 print(class_names[index])
 
-type_4 = Image.open('img_4/10.png').convert('RGB')
-type_4 = type_4.resize((width, height))
+type_4 = load_img('img_4/10.png', target_size=(width, height))
 
 plt.imshow(type_4)
 plt.show()
@@ -591,17 +647,6 @@ predictions = model.predict(type_4_x)
 index = np.argmax(predictions)
 
 print(class_names[index])
-
-# type_1 = preprocessing.image.load_img('cup.jpg', target_size=(width, height))
-
-# plt.imshow(type_1)
-# plt.show()
-
-# type_1_x = np.expand_dims(type_1, axis=0)
-# predictions = model.predict(type_1_x)
-# index = np.argmax(predictions)
-
-# print(class_names[index])
 
 
 # Live predictions using camera
