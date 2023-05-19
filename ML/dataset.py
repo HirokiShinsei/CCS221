@@ -4,7 +4,7 @@ import cv2
 from glob import glob
 from keras import preprocessing
 # from keras.preprocessing import image
-from keras.utils import load_img, img_to_array, array_to_img
+from keras.utils import load_img, img_to_array, array_to_img, to_categorical
 import os
 from keras.models import Sequential
 from keras.layers.core import Activation, Dropout, Flatten, Dense
@@ -40,14 +40,48 @@ while CAMERA.isOpened():
     res = int(aspect * camera_height)
     frame = cv2.resize(frame, (res, camera_height))
     
-    # calculate the new coordinates for the rectangle
-    # rectangle_x1 = int(150 * res / frame.shape[1])
-    # rectangle_y1 = int(50 * camera_height / frame.shape[0])
-    # rectangle_x2 = int(650 * res / frame.shape[1])
-    # rectangle_y2 = int(425 * camera_height / frame.shape[0])
+    # # Calculate the center of the frame
+    # center_x = frame.shape[1] // 2
+    # center_y = frame.shape[0] // 2
     
-    # the green rectangle
-    cv2.rectangle(frame, (150,50), (650, 425), (0,255,0), 2)
+    # # Define the dimensions of the bounding box
+    # box_width = 339  # Width of the bounding box (example)
+    # box_height = 400  # Height of the bounding box (example)
+    
+    # # Calculate the new coordinates for the centered bounding box
+    # rectangle_x1 = center_x - box_width // 2
+    # rectangle_y1 = center_y - box_height // 2
+    # rectangle_x2 = center_x + box_width // 2
+    # rectangle_y2 = center_y + box_height // 2
+    
+     # Calculate the center of the bounding box
+    center_x = int((150 + 650) / 2)
+    center_y = int((50 + 425) / 2)
+
+    # Calculate the new coordinates for the centered bounding box
+    box_width = 650 - 150
+    box_height = 425 - 50
+    
+    rectangle_x1 = center_x - int(box_width / 2)
+    rectangle_y1 = center_y - int(box_height / 2)
+    rectangle_x2 = center_x + int(box_width / 2)
+    rectangle_y2 = center_y + int(box_height / 2)
+    
+    # Calculate the offset for centering the bounding box
+    offset_x = int((339 - box_width) / 2)
+    offset_y = int((400 - box_height) / 2)
+
+    # Adjust the coordinates based on the offset
+    rectangle_x1 += offset_x
+    rectangle_y1 += offset_y
+    rectangle_x2 += offset_x
+    rectangle_y2 += offset_y
+
+    # Draw the centered bounding box
+    cv2.rectangle(frame, (rectangle_x1, rectangle_y1), (rectangle_x2, rectangle_y2), (0, 255, 0), 2)
+
+    # Draw the centered bounding box
+    cv2.rectangle(frame, (rectangle_x1, rectangle_y1), (rectangle_x2, rectangle_y2), (0, 255, 0), 2)
     
     # show the frame
     cv2.imshow('Capturing', frame)
@@ -92,7 +126,8 @@ print ('img4: ', len(raw_frames_type_4))
 for i, frame in enumerate(raw_frames_type_1):
     
     #get roi
-    roi = frame[50:425, 150:650]
+    roi = frame[rectangle_y1:rectangle_y2, rectangle_x1:rectangle_x2]
+    # roi = frame[50:425, 150:650]
     
     #parse brg to rgb
     roi = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
@@ -110,7 +145,8 @@ for i, frame in enumerate(raw_frames_type_1):
 for i, frame in enumerate(raw_frames_type_2):
     
     #get roi
-    roi = frame[50:425, 150:650]
+    roi = frame[rectangle_y1:rectangle_y2, rectangle_x1:rectangle_x2]
+    # roi = frame[50:425, 150:650]
     
     #parse brg to rgb
     roi = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
@@ -129,7 +165,8 @@ for i, frame in enumerate(raw_frames_type_2):
 for i, frame in enumerate(raw_frames_type_3):
     
     #get roi
-    roi = frame[50:425, 150:650]
+    roi = frame[rectangle_y1:rectangle_y2, rectangle_x1:rectangle_x2]
+    # roi = frame[50:425, 150:650]
     
     #parse brg to rgb
     roi = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
@@ -147,7 +184,8 @@ for i, frame in enumerate(raw_frames_type_3):
 for i, frame in enumerate(raw_frames_type_4):
     
     #get roi
-    roi = frame[50:425, 150:650]
+    roi = frame[rectangle_y1:rectangle_y2, rectangle_x1:rectangle_x2]
+    # roi = frame[50:425, 150:650]
     
     #parse brg to rgb
     roi = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
@@ -290,7 +328,7 @@ plt.figure(figsize=(12,8))
 
 for i, x in enumerate(images_type_1[:5]):
     
-    plt.subplot(1,5,i+1)
+    plt.subplot(1,10,i+1)
     image = array_to_img(x)
     plt.imshow(image)
     
@@ -301,9 +339,9 @@ plt.show()
 
 plt.figure(figsize=(12,8))
 
-for i, x in enumerate(images_type_2[:5]):
+for i, x in enumerate(images_type_2[:10]):
     
-    plt.subplot(1,5,i+1)
+    plt.subplot(1,10,i+1)
     image = array_to_img(x)
     plt.imshow(image)
     
@@ -313,9 +351,9 @@ for i, x in enumerate(images_type_2[:5]):
 plt.show()
     
 plt.figure(figsize=(12,8))
-for i, x in enumerate(images_type_3[:5]):
+for i, x in enumerate(images_type_3[:10]):
     
-    plt.subplot(1,5,i+1)
+    plt.subplot(1,10,i+1)
     image = array_to_img(x)
     plt.imshow(image)
     
@@ -325,9 +363,9 @@ for i, x in enumerate(images_type_3[:5]):
 plt.show()
 
 plt.figure(figsize=(12,8))
-for i, x in enumerate(images_type_4[:5]):
+for i, x in enumerate(images_type_4[:10]):
     
-    plt.subplot(1,5,i+1)
+    plt.subplot(1,10,i+1)
     image = array_to_img(x)
     plt.imshow(image)
     
@@ -375,8 +413,6 @@ X = X/255.0
 X = X.reshape(-1, width, height, 3)
 # X.shape=(72, 96, 96, 3)
 
-from keras.utils import to_categorical
-
 y_type_1 = [0 for item in enumerate(X_type_1)]
 y_type_2 = [1 for item in enumerate(X_type_2)]
 y_type_3 = [2 for item in enumerate(X_type_3)]
@@ -411,7 +447,7 @@ dense_2_n_drop = 0.2
 #values you can adjust
 
 lr = 0.001
-epochs = 5
+epochs = 15
 batch_size = 15
 color_channels = 3
 
@@ -466,7 +502,7 @@ model = build_model()
 
 model.summary()
 
-history = model.fit(X, y, validation_split=0.10, epochs=10, batch_size=5)
+history = model.fit(X, y, validation_split=0.10, epochs=epochs, batch_size=batch_size)
 
 print (history)
 
@@ -713,6 +749,8 @@ import time
 # CAMERA.release()
 # cv2.destroyAllWindows()
 
+# =====================================================================================
+
 CAMERA = cv2.VideoCapture(0)
 camera_height = 500
 
@@ -728,20 +766,47 @@ while True:
     frame = cv2.resize(frame, (res, camera_height))
 
     # Get ROI
-    roi = frame[50:425, 150:650]
+    roi = frame[rectangle_y1:rectangle_y2, rectangle_x1:rectangle_x2]
+    # roi = frame[50:425, 150:650]
 
     # Parse BRG to RGB
     roi = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
 
     # Adjust alignment
     roi = cv2.resize(roi, (width, height))
-    roi = np.expand_dims(roi, axis=0)
+    roi_x = np.expand_dims(roi, axis=0)
 
-    predictions = model.predict(roi)
+    predictions = model.predict(roi_x)
     type_1_x, type_2_x, type_3_x, type_4_x = predictions[0]
 
     # Green rectangle
-    cv2.rectangle(frame, (150, 50), (650, 425), (0, 255, 0), 2)
+    # Calculate the center of the bounding box
+    center_x = int((150 + 650) / 2)
+    center_y = int((50 + 425) / 2)
+
+    # Calculate the new coordinates for the centered bounding box
+    box_width = 650 - 150
+    box_height = 425 - 50
+    
+    rectangle_x1 = center_x - int(box_width / 2)
+    rectangle_y1 = center_y - int(box_height / 2)
+    rectangle_x2 = center_x + int(box_width / 2)
+    rectangle_y2 = center_y + int(box_height / 2)
+    
+    # Calculate the offset for centering the bounding box
+    offset_x = int((save_width - box_width) / 2)
+    offset_y = int((save_height - box_height) / 2)
+
+    # Adjust the coordinates based on the offset
+    rectangle_x1 += offset_x
+    rectangle_y1 += offset_y
+    rectangle_x2 += offset_x
+    rectangle_y2 += offset_y
+
+    # Draw the centered bounding box
+    cv2.rectangle(frame, (rectangle_x1, rectangle_y1), (rectangle_x2, rectangle_y2), (0, 255, 0), 2)
+
+    # cv2.rectangle(frame, (150, 50), (650, 425), (0, 255, 0), 2)
 
     # Predictions/Labels
     type_1_text = '{} - {}%'.format(class_names[0], int(type_1_x * 100))
