@@ -16,7 +16,8 @@ from PIL import Image
 
 # class_names = ['CUP','SPOON','FORK','MOUSE']
 # class_names = ['KNIFE','WATER_BOTTLE','PHONE','GLASS']
-class_names = ['FORK','GLASSES','PLATE','SPOON']
+# class_names = ['FORK','GLASSES','PLATE','SPOON']
+class_names = ['KANAN', 'MARI', 'CHIKA', 'RUBY']
 
 #creating realtime dataset
 
@@ -227,7 +228,7 @@ print('Shape of images_type_4:', images_type_4[0].shape)
 
 plt.figure(figsize=(12,8))
 
-for i, x in enumerate(images_type_1[:5]):
+for i, x in enumerate(images_type_1[:10]):
     
     plt.subplot(1,10,i+1)
     image = array_to_img(x)
@@ -422,7 +423,6 @@ plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
 plt.show()
 
-
 #prediction
 import seaborn as sns 
 from sklearn.metrics import confusion_matrix
@@ -431,13 +431,21 @@ def plt_show(img):
     plt.imshow(img)
     plt.show()
     
+# #learning data
+# fork = "img_1/10.png"
+# glasses = "img_2/16.png"
+# plate = "img_3/09.png"
+# spoon = "img_4/10.png"
+    
 #learning data
-fork = "img_1/10.png"
-glasses = "img_2/16.png"
-plate = "img_3/09.png"
-spoon = "img_4/10.png"
+kanan = "img_1/1.JPG"
+mari = "img_2/1.JPG"
+chika = "img_3/1.JPG"
+ruby = "img_4/1.JPG"
 
-imgs = [fork, glasses, plate, spoon]
+# imgs = [fork, glasses, plate, spoon]
+
+imgs = [kanan, mari, chika, ruby]
 
 # def predict_(img_path):
 
@@ -462,7 +470,51 @@ for i in range(len(imgs)):
 cm = confusion_matrix(true_labels, predicted_classes)
 f = sns.heatmap(cm, xticklabels=class_names, yticklabels=predicted_classes, annot=True)
 
-type_1 = load_img('img_1/10.png', target_size=(width, height))
+# type_1 = load_img('img_1/10.png', target_size=(width, height))
+
+# plt.imshow(type_1)
+# plt.show()
+
+# type_1_x = np.expand_dims(type_1, axis=0)
+# predictions = model.predict(type_1_x)
+# index = np.argmax(predictions)
+
+# print(class_names[index])
+
+# type_2 = load_img('img_2/16.png', target_size=(width, height))
+
+# plt.imshow(type_2)
+# plt.show()
+
+# type_2_x = np.expand_dims(type_2, axis=0)
+# predictions = model.predict(type_2_x)
+# index = np.argmax(predictions)
+
+# print(class_names[index])
+
+# type_3 = load_img('img_3/09.png', target_size=(width, height))
+
+# plt.imshow(type_3)
+# plt.show()
+
+# type_3_x = np.expand_dims(type_3, axis=0)
+# predictions = model.predict(type_3_x)
+# index = np.argmax(predictions)
+
+# print(class_names[index])
+
+# type_4 = load_img('img_4/10.png', target_size=(width, height))
+
+# plt.imshow(type_4)
+# plt.show()
+
+# type_4_x = np.expand_dims(type_4, axis=0)
+# predictions = model.predict(type_4_x)
+# index = np.argmax(predictions)
+
+# print(class_names[index])
+
+type_1 = load_img('img_1/1.JPG', target_size=(width, height))
 
 plt.imshow(type_1)
 plt.show()
@@ -473,7 +525,7 @@ index = np.argmax(predictions)
 
 print(class_names[index])
 
-type_2 = load_img('img_2/16.png', target_size=(width, height))
+type_2 = load_img('img_2/1.JPG', target_size=(width, height))
 
 plt.imshow(type_2)
 plt.show()
@@ -484,7 +536,7 @@ index = np.argmax(predictions)
 
 print(class_names[index])
 
-type_3 = load_img('img_3/09.png', target_size=(width, height))
+type_3 = load_img('img_3/1.JPG', target_size=(width, height))
 
 plt.imshow(type_3)
 plt.show()
@@ -495,7 +547,7 @@ index = np.argmax(predictions)
 
 print(class_names[index])
 
-type_4 = load_img('img_4/10.png', target_size=(width, height))
+type_4 = load_img('img_4/1.jpg', target_size=(width, height))
 
 plt.imshow(type_4)
 plt.show()
