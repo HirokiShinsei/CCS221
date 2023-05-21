@@ -29,57 +29,112 @@ raw_frames_type_2 = []
 raw_frames_type_3 = []
 raw_frames_type_4 = []
 
+# while CAMERA.isOpened():
+#     # read a new camera frame
+#     ret, frame = CAMERA.read()
+    
+#     # flip
+#     frame = cv2.flip(frame, 1)
+    
+#     # rescale the image output
+#     aspect = frame.shape[1] / float(frame.shape[0])
+#     res = int(aspect * camera_height)
+#     frame = cv2.resize(frame, (res, camera_height))
+     
+#     # Calculate the center of the bounding box
+#     center_x = int((150 + 650) / 2)
+#     center_y = int((50 + 425) / 2)
+
+#     # Calculate the new coordinates for the centered bounding box
+#     box_width = 650 - 150
+#     box_height = 425 - 50
+    
+#     rectangle_x1 = center_x - int(box_width / 2)
+#     rectangle_y1 = center_y - int(box_height / 2)
+#     rectangle_x2 = center_x + int(box_width / 2)
+#     rectangle_y2 = center_y + int(box_height / 2)
+    
+#     # Calculate the offset for centering the bounding box
+#     offset_x = int((339 - box_width) / 2)
+#     offset_y = int((400 - box_height) / 2)
+
+#     # Adjust the coordinates based on the offset
+#     rectangle_x1 += offset_x
+#     rectangle_y1 += offset_y
+#     rectangle_x2 += offset_x
+#     rectangle_y2 += offset_y
+
+#     # Draw the centered bounding box
+#     cv2.rectangle(frame, (rectangle_x1, rectangle_y1), (rectangle_x2, rectangle_y2), (0, 255, 0), 2)
+
+#     # Draw the centered bounding box
+#     cv2.rectangle(frame, (rectangle_x1, rectangle_y1), (rectangle_x2, rectangle_y2), (0, 255, 0), 2)
+    
+#     # show the frame
+#     cv2.imshow('Capturing', frame)
+    
+#     # controls q = quit/ s = capturing
+#     key = cv2.waitKey(1) & 0xFF
+    
+#     if key == ord('q'):
+#         break
+#     elif key == ord('1'):
+#         # save the raw frames to frame
+#         raw_frames_type_1.append(frame)
+#         print("Captured type 1 frame.")
+#     elif key == ord('2'):
+#         raw_frames_type_2.append(frame)
+#         print("Captured type 2 frame.")
+#     elif key == ord('3'):
+#         raw_frames_type_3.append(frame)
+#         print("Captured type 3 frame.")
+#     elif key == ord('4'):
+#         raw_frames_type_4.append(frame)
+#         print("Captured type 4 frame.")
+
 while CAMERA.isOpened():
-    # read a new camera frame
+    # Read a new camera frame
     ret, frame = CAMERA.read()
-    
-    # flip
+
+    # Flip the frame horizontally
     frame = cv2.flip(frame, 1)
-    
-    # rescale the image output
+
+    # Rescale the image output
     aspect = frame.shape[1] / float(frame.shape[0])
     res = int(aspect * camera_height)
     frame = cv2.resize(frame, (res, camera_height))
-     
-    # Calculate the center of the bounding box
-    center_x = int((150 + 650) / 2)
-    center_y = int((50 + 425) / 2)
+
+    # Calculate the center of the window
+    window_center_x = frame.shape[1] // 2
+    window_center_y = frame.shape[0] // 2
+
+    # Calculate the new width and height for the bounding box
+    box_width = 400
+    box_height = int(box_width / aspect)
+
+    # Calculate the offset for centering the bounding box
+    offset_x = (frame.shape[1] - box_width) // 2
+    offset_y = (frame.shape[0] - box_height) // 2
 
     # Calculate the new coordinates for the centered bounding box
-    box_width = 650 - 150
-    box_height = 425 - 50
-    
-    rectangle_x1 = center_x - int(box_width / 2)
-    rectangle_y1 = center_y - int(box_height / 2)
-    rectangle_x2 = center_x + int(box_width / 2)
-    rectangle_y2 = center_y + int(box_height / 2)
-    
-    # Calculate the offset for centering the bounding box
-    offset_x = int((339 - box_width) / 2)
-    offset_y = int((400 - box_height) / 2)
-
-    # Adjust the coordinates based on the offset
-    rectangle_x1 += offset_x
-    rectangle_y1 += offset_y
-    rectangle_x2 += offset_x
-    rectangle_y2 += offset_y
+    rectangle_x1 = window_center_x - (box_width // 2)
+    rectangle_y1 = window_center_y - (box_height // 2)
+    rectangle_x2 = window_center_x + (box_width // 2)
+    rectangle_y2 = window_center_y + (box_height // 2)
 
     # Draw the centered bounding box
     cv2.rectangle(frame, (rectangle_x1, rectangle_y1), (rectangle_x2, rectangle_y2), (0, 255, 0), 2)
 
-    # Draw the centered bounding box
-    cv2.rectangle(frame, (rectangle_x1, rectangle_y1), (rectangle_x2, rectangle_y2), (0, 255, 0), 2)
-    
-    # show the frame
+    # Show the frame
     cv2.imshow('Capturing', frame)
-    
-    # controls q = quit/ s = capturing
+
+    # Controls q = quit/ s = capturing
     key = cv2.waitKey(1) & 0xFF
-    
+
     if key == ord('q'):
         break
     elif key == ord('1'):
-        # save the raw frames to frame
+        # Save the raw frames to frame
         raw_frames_type_1.append(frame)
         print("Captured type 1 frame.")
     elif key == ord('2'):
@@ -92,10 +147,9 @@ while CAMERA.isOpened():
         raw_frames_type_4.append(frame)
         print("Captured type 4 frame.")
 
-# camera
+# Release the camera
 CAMERA.release()
 cv2.destroyAllWindows()
-
 
 save_width = 339
 save_height = 400
@@ -228,9 +282,9 @@ print('Shape of images_type_4:', images_type_4[0].shape)
 
 plt.figure(figsize=(12,8))
 
-for i, x in enumerate(images_type_1[:10]):
+for i, x in enumerate(images_type_1[:5]):
     
-    plt.subplot(1,10,i+1)
+    plt.subplot(1,5,i+1)
     image = array_to_img(x)
     plt.imshow(image)
     
@@ -241,9 +295,9 @@ plt.show()
 
 plt.figure(figsize=(12,8))
 
-for i, x in enumerate(images_type_2[:10]):
+for i, x in enumerate(images_type_2[:5]):
     
-    plt.subplot(1,10,i+1)
+    plt.subplot(1,5,i+1)
     image = array_to_img(x)
     plt.imshow(image)
     
@@ -253,9 +307,9 @@ for i, x in enumerate(images_type_2[:10]):
 plt.show()
     
 plt.figure(figsize=(12,8))
-for i, x in enumerate(images_type_3[:10]):
+for i, x in enumerate(images_type_3[:5]):
     
-    plt.subplot(1,10,i+1)
+    plt.subplot(1,5,i+1)
     image = array_to_img(x)
     plt.imshow(image)
     
@@ -265,9 +319,9 @@ for i, x in enumerate(images_type_3[:10]):
 plt.show()
 
 plt.figure(figsize=(12,8))
-for i, x in enumerate(images_type_4[:10]):
+for i, x in enumerate(images_type_4[:5]):
     
-    plt.subplot(1,10,i+1)
+    plt.subplot(1,5,i+1)
     image = array_to_img(x)
     plt.imshow(image)
     
@@ -338,8 +392,8 @@ dense_2_n_drop = 0.2
 #values you can adjust
 
 lr = 0.001
-epochs = 15
-batch_size = 15
+epochs = 20
+batch_size = 5
 color_channels = 3
 
 def build_model( conv_1_drop = conv_1_drop, conv_2_drop = conv_2_drop,
@@ -567,6 +621,84 @@ import time
 CAMERA = cv2.VideoCapture(0)
 camera_height = 500
 
+# while True:
+#     _, frame = CAMERA.read()
+
+#     # Flip
+#     frame = cv2.flip(frame, 1)
+
+#     # Rescale the image output
+#     aspect = frame.shape[1] / float(frame.shape[0])
+#     res = int(aspect * camera_height)  # Landscape orientation - wide image
+#     frame = cv2.resize(frame, (res, camera_height))
+
+#     # Get ROI
+#     roi = frame[rectangle_y1:rectangle_y2, rectangle_x1:rectangle_x2]
+#     # roi = frame[50:425, 150:650]
+
+#     # Parse BRG to RGB
+#     roi = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
+
+#     # Adjust alignment
+#     roi = cv2.resize(roi, (width, height))
+#     roi_x = np.expand_dims(roi, axis=0)
+
+#     predictions = model.predict(roi_x)
+#     type_1_x, type_2_x, type_3_x, type_4_x = predictions[0]
+
+#     # Green rectangle
+#     # Calculate the center of the bounding box
+#     center_x = int((150 + 650) / 2)
+#     center_y = int((50 + 425) / 2)
+
+#     # Calculate the new coordinates for the centered bounding box
+#     box_width = 650 - 150
+#     box_height = 425 - 50
+    
+#     rectangle_x1 = center_x - int(box_width / 2)
+#     rectangle_y1 = center_y - int(box_height / 2)
+#     rectangle_x2 = center_x + int(box_width / 2)
+#     rectangle_y2 = center_y + int(box_height / 2)
+    
+#     # Calculate the offset for centering the bounding box
+#     offset_x = int((save_width - box_width) / 2)
+#     offset_y = int((save_height - box_height) / 2)
+
+#     # Adjust the coordinates based on the offset
+#     rectangle_x1 += offset_x
+#     rectangle_y1 += offset_y
+#     rectangle_x2 += offset_x
+#     rectangle_y2 += offset_y
+
+#     # Draw the centered bounding box
+#     cv2.rectangle(frame, (rectangle_x1, rectangle_y1), (rectangle_x2, rectangle_y2), (0, 255, 0), 2)
+
+#     # cv2.rectangle(frame, (150, 50), (650, 425), (0, 255, 0), 2)
+
+#     # Predictions/Labels
+#     type_1_text = '{} - {}%'.format(class_names[0], int(type_1_x * 100))
+#     cv2.putText(frame, type_1_text, (70, 210), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+
+#     type_2_text = '{} - {}%'.format(class_names[1], int(type_2_x * 100))
+#     cv2.putText(frame, type_2_text, (70, 235), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+
+#     type_3_text = '{} - {}%'.format(class_names[2], int(type_3_x * 100))
+#     cv2.putText(frame, type_3_text, (70, 255), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+
+#     type_4_text = '{} - {}%'.format(class_names[3], int(type_4_x * 100))
+#     cv2.putText(frame, type_4_text, (70, 275), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+
+#     cv2.imshow('Real-time object detection', frame)
+
+#     # Controls q = quit
+#     key = cv2.waitKey(1)
+#     if key & 0xFF == ord('q'):
+#         break
+
+# # Release the camera
+# CAMERA.release()
+# cv2.destroyAllWindows()
+
 while True:
     _, frame = CAMERA.read()
 
@@ -578,9 +710,26 @@ while True:
     res = int(aspect * camera_height)  # Landscape orientation - wide image
     frame = cv2.resize(frame, (res, camera_height))
 
+    # Calculate the center of the bounding box
+    window_center_x = frame.shape[1] // 2
+    window_center_y = frame.shape[0] // 2
+
+    # Calculate the new width and height for the adjusted bounding box
+    box_width = 400
+    box_height = int(box_width / aspect)
+    
+    # Calculate the offset for centering the frame
+    # offset_x = ((frame.shape[1] - box_width) // 2)
+    # offset_y = ((frame.shape[0] - box_height) // 2)
+    
+    # Calculate the new coordinates for the adjusted bounding box
+    new_rectangle_x1 = window_center_x - (box_width // 2)
+    new_rectangle_y1 = window_center_y - (box_height // 2)
+    new_rectangle_x2 = window_center_x + (box_width // 2)
+    new_rectangle_y2 = window_center_y + (box_height // 2)
+
     # Get ROI
-    roi = frame[rectangle_y1:rectangle_y2, rectangle_x1:rectangle_x2]
-    # roi = frame[50:425, 150:650]
+    roi = frame[new_rectangle_y1:new_rectangle_y2, new_rectangle_x1:new_rectangle_x2]
 
     # Parse BRG to RGB
     roi = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
@@ -592,34 +741,8 @@ while True:
     predictions = model.predict(roi_x)
     type_1_x, type_2_x, type_3_x, type_4_x = predictions[0]
 
-    # Green rectangle
-    # Calculate the center of the bounding box
-    center_x = int((150 + 650) / 2)
-    center_y = int((50 + 425) / 2)
-
-    # Calculate the new coordinates for the centered bounding box
-    box_width = 650 - 150
-    box_height = 425 - 50
-    
-    rectangle_x1 = center_x - int(box_width / 2)
-    rectangle_y1 = center_y - int(box_height / 2)
-    rectangle_x2 = center_x + int(box_width / 2)
-    rectangle_y2 = center_y + int(box_height / 2)
-    
-    # Calculate the offset for centering the bounding box
-    offset_x = int((save_width - box_width) / 2)
-    offset_y = int((save_height - box_height) / 2)
-
-    # Adjust the coordinates based on the offset
-    rectangle_x1 += offset_x
-    rectangle_y1 += offset_y
-    rectangle_x2 += offset_x
-    rectangle_y2 += offset_y
-
-    # Draw the centered bounding box
-    cv2.rectangle(frame, (rectangle_x1, rectangle_y1), (rectangle_x2, rectangle_y2), (0, 255, 0), 2)
-
-    # cv2.rectangle(frame, (150, 50), (650, 425), (0, 255, 0), 2)
+    # Draw the adjusted bounding box
+    cv2.rectangle(frame, (new_rectangle_x1, new_rectangle_y1), (new_rectangle_x2, new_rectangle_y2), (0, 255, 0), 2)
 
     # Predictions/Labels
     type_1_text = '{} - {}%'.format(class_names[0], int(type_1_x * 100))
@@ -633,6 +756,16 @@ while True:
 
     type_4_text = '{} - {}%'.format(class_names[3], int(type_4_x * 100))
     cv2.putText(frame, type_4_text, (70, 275), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+    
+    # roi_x1 = new_rectangle_x1
+    # roi_y1 = new_rectangle_y1
+    # roi_x2 = new_rectangle_x2
+    # roi_y2 = new_rectangle_y2
+
+    # if roi_x1 >= 0 and roi_y1 >= 0 and roi_x2 <= frame.shape[1] and roi_y2 <= frame.shape[0]:
+    #     print("ROI matches adjusted bounding box")
+    # else:
+    #     print("ROI does not match adjusted bounding box")
 
     cv2.imshow('Real-time object detection', frame)
 
