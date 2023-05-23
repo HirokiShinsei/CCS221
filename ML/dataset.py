@@ -6,11 +6,14 @@ from keras import preprocessing
 # from keras.preprocessing import image
 from keras.utils import load_img, img_to_array, array_to_img, to_categorical
 import os
-from keras.models import Sequential
+from keras.models import Sequential, load_model
 from keras.layers.core import Activation, Dropout, Flatten, Dense
 from keras.layers.convolutional import Convolution2D, MaxPooling2D
 from keras.optimizers import Adam
+from keras.applications import inception_v3
+import time 
 from PIL import Image
+import sys
 
 # %matplotlib inline
 
@@ -19,7 +22,181 @@ from PIL import Image
 # class_names = ['FORK','GLASSES','PLATE','SPOON']
 class_names = ['KANAN', 'MARI', 'CHIKA', 'RUBY']
 
+width = 96
+height = 96
+
+def live_capture():
+
+    model_name_live= (input("What is the name of your model? (h5 format, extension will be automatically added): "))
+    model = load_model(model_name_live + ".h5")
+
+    CAMERA = cv2.VideoCapture(0)
+    camera_height = 500
+
+    # while True:
+    #     _, frame = CAMERA.read()
+
+    #     # Flip
+    #     frame = cv2.flip(frame, 1)
+
+    #     # Rescale the image output
+    #     aspect = frame.shape[1] / float(frame.shape[0])
+    #     res = int(aspect * camera_height)  # Landscape orientation - wide image
+    #     frame = cv2.resize(frame, (res, camera_height))
+
+    #     # Get ROI
+    #     roi = frame[rectangle_y1:rectangle_y2, rectangle_x1:rectangle_x2]
+    #     # roi = frame[50:425, 150:650]
+
+    #     # Parse BRG to RGB
+    #     roi = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
+
+    #     # Adjust alignment
+    #     roi = cv2.resize(roi, (width, height))
+    #     roi_x = np.expand_dims(roi, axis=0)
+
+    #     predictions = model.predict(roi_x)
+    #     type_1_x, type_2_x, type_3_x, type_4_x = predictions[0]
+
+    #     # Green rectangle
+    #     # Calculate the center of the bounding box
+    #     center_x = int((150 + 650) / 2)
+    #     center_y = int((50 + 425) / 2)
+
+    #     # Calculate the new coordinates for the centered bounding box
+    #     box_width = 650 - 150
+    #     box_height = 425 - 50
+        
+    #     rectangle_x1 = center_x - int(box_width / 2)
+    #     rectangle_y1 = center_y - int(box_height / 2)
+    #     rectangle_x2 = center_x + int(box_width / 2)
+    #     rectangle_y2 = center_y + int(box_height / 2)
+        
+    #     # Calculate the offset for centering the bounding box
+    #     offset_x = int((save_width - box_width) / 2)
+    #     offset_y = int((save_height - box_height) / 2)
+
+    #     # Adjust the coordinates based on the offset
+    #     rectangle_x1 += offset_x
+    #     rectangle_y1 += offset_y
+    #     rectangle_x2 += offset_x
+    #     rectangle_y2 += offset_y
+
+    #     # Draw the centered bounding box
+    #     cv2.rectangle(frame, (rectangle_x1, rectangle_y1), (rectangle_x2, rectangle_y2), (0, 255, 0), 2)
+
+    #     # cv2.rectangle(frame, (150, 50), (650, 425), (0, 255, 0), 2)
+
+    #     # Predictions/Labels
+    #     type_1_text = '{} - {}%'.format(class_names[0], int(type_1_x * 100))
+    #     cv2.putText(frame, type_1_text, (70, 210), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+
+    #     type_2_text = '{} - {}%'.format(class_names[1], int(type_2_x * 100))
+    #     cv2.putText(frame, type_2_text, (70, 235), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+
+    #     type_3_text = '{} - {}%'.format(class_names[2], int(type_3_x * 100))
+    #     cv2.putText(frame, type_3_text, (70, 255), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+
+    #     type_4_text = '{} - {}%'.format(class_names[3], int(type_4_x * 100))
+    #     cv2.putText(frame, type_4_text, (70, 275), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+
+    #     cv2.imshow('Real-time object detection', frame)
+
+    #     # Controls q = quit
+    #     key = cv2.waitKey(1)
+    #     if key & 0xFF == ord('q'):
+    #         break
+
+    # # Release the camera
+    # CAMERA.release()
+    # cv2.destroyAllWindows()
+
+    while True:
+        _, frame = CAMERA.read(0)
+
+        # Flip
+        frame = cv2.flip(frame, 1)
+
+        # Rescale the image output
+        aspect = frame.shape[1] / float(frame.shape[0])
+        res = int(aspect * camera_height)  # Landscape orientation - wide image
+        frame = cv2.resize(frame, (res, camera_height))
+
+        # Calculate the center of the bounding box
+        window_center_x = frame.shape[1] // 2
+        window_center_y = frame.shape[0] // 2
+
+        # Calculate the new width and height for the adjusted bounding box
+        box_width = 400
+        box_height = int(box_width / aspect)
+        
+        # Calculate the offset for centering the frame
+        # offset_x = ((frame.shape[1] - box_width) // 2)
+        # offset_y = ((frame.shape[0] - box_height) // 2)
+        
+        # Calculate the new coordinates for the adjusted bounding box
+        new_rectangle_x1 = window_center_x - (box_width // 2)
+        new_rectangle_y1 = window_center_y - (box_height // 2)
+        new_rectangle_x2 = window_center_x + (box_width // 2)
+        new_rectangle_y2 = window_center_y + (box_height // 2)
+
+        # Get ROI
+        roi = frame[new_rectangle_y1:new_rectangle_y2, new_rectangle_x1:new_rectangle_x2]
+
+        # Parse BRG to RGB
+        roi = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
+
+        # Adjust alignment
+        roi = cv2.resize(roi, (width, height))
+        roi_x = np.expand_dims(roi, axis=0)
+
+        predictions = model.predict(roi_x)
+        type_1_x, type_2_x, type_3_x, type_4_x = predictions[0]
+
+        # Draw the adjusted bounding box
+        cv2.rectangle(frame, (new_rectangle_x1, new_rectangle_y1), (new_rectangle_x2, new_rectangle_y2), (0, 255, 0), 2)
+
+        # Predictions/Labels
+        type_1_text = '{} - {}%'.format(class_names[0], int(type_1_x * 100))
+        cv2.putText(frame, type_1_text, (70, 210), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+
+        type_2_text = '{} - {}%'.format(class_names[1], int(type_2_x * 100))
+        cv2.putText(frame, type_2_text, (70, 235), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+
+        type_3_text = '{} - {}%'.format(class_names[2], int(type_3_x * 100))
+        cv2.putText(frame, type_3_text, (70, 255), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+
+        type_4_text = '{} - {}%'.format(class_names[3], int(type_4_x * 100))
+        cv2.putText(frame, type_4_text, (70, 275), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
+        
+        # roi_x1 = new_rectangle_x1
+        # roi_y1 = new_rectangle_y1
+        # roi_x2 = new_rectangle_x2
+        # roi_y2 = new_rectangle_y2
+
+        # if roi_x1 >= 0 and roi_y1 >= 0 and roi_x2 <= frame.shape[1] and roi_y2 <= frame.shape[0]:
+        #     print("ROI matches adjusted bounding box")
+        # else:
+        #     print("ROI does not match adjusted bounding box")
+
+        cv2.imshow('Real-time object detection', frame)
+
+        # Controls q = quit
+        key = cv2.waitKey(1)
+        if key & 0xFF == ord('q'):
+            break
+
+    # Release the camera
+    CAMERA.release()
+    cv2.destroyAllWindows()
+
+    sys.exit()
+
 #creating realtime dataset
+
+training_answer = input("Do you want to create a new dataset or retrain the current dataset? (y/n): ")
+if training_answer == 'n' or training_answer == 'N' or training_answer == 'No' or training_answer == 'no':
+    live_capture()
 
 CAMERA = cv2.VideoCapture(0)
 camera_height = 500
@@ -241,9 +418,6 @@ for i, frame in enumerate(raw_frames_type_4):
     plt.axis('off')
     plt.show()
     
-width = 96
-height = 96
-
 # Initialize empty lists to store images of each type
 images_type_1 = []
 images_type_2 = []
@@ -282,9 +456,11 @@ print('Shape of images_type_4:', images_type_4[0].shape)
 
 plt.figure(figsize=(12,8))
 
-for i, x in enumerate(images_type_1[:5]):
+samples = 5
+
+for i, x in enumerate(images_type_1[:samples]):
     
-    plt.subplot(1,5,i+1)
+    plt.subplot(1,samples,i+1)
     image = array_to_img(x)
     plt.imshow(image)
     
@@ -295,9 +471,9 @@ plt.show()
 
 plt.figure(figsize=(12,8))
 
-for i, x in enumerate(images_type_2[:5]):
+for i, x in enumerate(images_type_2[:samples]):
     
-    plt.subplot(1,5,i+1)
+    plt.subplot(1,samples,i+1)
     image = array_to_img(x)
     plt.imshow(image)
     
@@ -307,9 +483,9 @@ for i, x in enumerate(images_type_2[:5]):
 plt.show()
     
 plt.figure(figsize=(12,8))
-for i, x in enumerate(images_type_3[:5]):
+for i, x in enumerate(images_type_3[:samples]):
     
-    plt.subplot(1,5,i+1)
+    plt.subplot(1,samples,i+1)
     image = array_to_img(x)
     plt.imshow(image)
     
@@ -319,9 +495,9 @@ for i, x in enumerate(images_type_3[:5]):
 plt.show()
 
 plt.figure(figsize=(12,8))
-for i, x in enumerate(images_type_4[:5]):
+for i, x in enumerate(images_type_4[:samples]):
     
-    plt.subplot(1,5,i+1)
+    plt.subplot(1,samples,i+1)
     image = array_to_img(x)
     plt.imshow(image)
     
@@ -377,403 +553,250 @@ y.shape
 (72, 4)
 
 #Default Parameters
-
-#situational - values, you may not adjust these
-
-conv_1 =16
-conv_1_drop = 0.2
-conv_2 = 32
-conv_2_drop = 0.2
-dense_1_n = 1024
-dense_1_n_drop = 0.2
-dense_2_n = 512
-dense_2_n_drop = 0.2
-
-#values you can adjust
-
-lr = 0.001
-epochs = 20
-batch_size = 5
-color_channels = 3
-
-def build_model( conv_1_drop = conv_1_drop, conv_2_drop = conv_2_drop,
-                dense_1_n = dense_1_n, dense_1_n_drop = dense_1_n_drop,
-                dense_2_n = dense_2_n, dense_2_n_drop = dense_2_n_drop,
-                lr=lr):
-    
-    model = Sequential()
-    
-    model.add(Convolution2D(conv_1, (3,3),
-                            input_shape = (width, height, color_channels),
-                            activation='relu'))
-    
-    model.add(MaxPooling2D(pool_size=(2,2)))
-    
-    model.add(Dropout(conv_1_drop))
-    
-    #---
-    
-    model.add(Convolution2D(conv_2, (3,3), activation='relu'))
-    model.add(MaxPooling2D(pool_size=(2,2)))
-    model.add(Dropout(conv_1_drop))
-    
-    # ---
-    
-    model.add(Flatten())
-    
-    # ---
-    
-    model.add(Dense(dense_1_n, activation='relu'))
-    model.add(Dropout(dense_1_n_drop))
-    
-    # ---
-    
-    model.add(Dense(dense_2_n, activation='relu'))
-    model.add(Dropout(dense_2_n_drop))
-    
-    # ---
-    
-    model.add(Dense(len(class_names), activation='softmax'))
-    
-    model.compile(loss='categorical_crossentropy',
-                  optimizer=Adam(clipvalue=0.5),
-                  metrics=['accuracy'])
-    
-    return model
-
-# model parameter
-
-model = build_model()
-
-model.summary()
-
-history = model.fit(X, y, validation_split=0.10, epochs=epochs, batch_size=batch_size)
-
-print (history)
-
-# Model evaluation
-scores = model.evaluate(X, y, verbose=1)
-print ("Accuracy: %.2f%%" %(scores[1]*100))
-
-plt.plot(history.history['accuracy'])
-plt.plot(history.history['val_accuracy'])
-plt.title('Model Accuracy')
-plt.ylabel('loss and accuracy')
-plt.xlabel('epoch')
-plt.legend(['train', 'test'], loc='upper left')
-plt.show()
-
-plt.plot(history.history['loss'])
-plt.title('Model Loss')
-plt.ylabel('loss')
-plt.xlabel('epoch')
-plt.legend(['train', 'test'], loc='upper left')
-plt.show()
-
-plt.plot(history.history['accuracy'])
-plt.title('Model Accuracy')
-plt.ylabel('accuracy')
-plt.xlabel('epoch')
-plt.legend(['train', 'test'], loc='upper left')
-plt.show()
-
-#prediction
-import seaborn as sns 
-from sklearn.metrics import confusion_matrix
-
-def plt_show(img):
-    plt.imshow(img)
-    plt.show()
-    
-# #learning data
-# fork = "img_1/10.png"
-# glasses = "img_2/16.png"
-# plate = "img_3/09.png"
-# spoon = "img_4/10.png"
-    
-#learning data
-kanan = "img_1/1.JPG"
-mari = "img_2/1.JPG"
-chika = "img_3/1.JPG"
-ruby = "img_4/1.JPG"
-
-# imgs = [fork, glasses, plate, spoon]
-
-imgs = [kanan, mari, chika, ruby]
-
-# def predict_(img_path):
-
-classes = None
-predicted_classes = []
-true_labels = []
-
-for i in range(len(imgs)):
-    type_ = load_img(imgs[i], target_size=(width, height))
-    plt.imshow(type_)
-    plt.show()
-    
-    type_x = np.expand_dims(type_, axis=0)
-    prediction = model.predict(type_x)
-    index = np.argmax(prediction)
-    print(class_names[index])
-    classes = class_names[index]
-    predicted_classes.append(class_names[index])
-    
-    true_labels.append(class_names[i % len(class_names)])  # Append the true class to the true_labels list
-    
-cm = confusion_matrix(true_labels, predicted_classes)
-f = sns.heatmap(cm, xticklabels=class_names, yticklabels=predicted_classes, annot=True)
-
-# type_1 = load_img('img_1/10.png', target_size=(width, height))
-
-# plt.imshow(type_1)
-# plt.show()
-
-# type_1_x = np.expand_dims(type_1, axis=0)
-# predictions = model.predict(type_1_x)
-# index = np.argmax(predictions)
-
-# print(class_names[index])
-
-# type_2 = load_img('img_2/16.png', target_size=(width, height))
-
-# plt.imshow(type_2)
-# plt.show()
-
-# type_2_x = np.expand_dims(type_2, axis=0)
-# predictions = model.predict(type_2_x)
-# index = np.argmax(predictions)
-
-# print(class_names[index])
-
-# type_3 = load_img('img_3/09.png', target_size=(width, height))
-
-# plt.imshow(type_3)
-# plt.show()
-
-# type_3_x = np.expand_dims(type_3, axis=0)
-# predictions = model.predict(type_3_x)
-# index = np.argmax(predictions)
-
-# print(class_names[index])
-
-# type_4 = load_img('img_4/10.png', target_size=(width, height))
-
-# plt.imshow(type_4)
-# plt.show()
-
-# type_4_x = np.expand_dims(type_4, axis=0)
-# predictions = model.predict(type_4_x)
-# index = np.argmax(predictions)
-
-# print(class_names[index])
-
-type_1 = load_img('img_1/1.JPG', target_size=(width, height))
-
-plt.imshow(type_1)
-plt.show()
-
-type_1_x = np.expand_dims(type_1, axis=0)
-predictions = model.predict(type_1_x)
-index = np.argmax(predictions)
-
-print(class_names[index])
-
-type_2 = load_img('img_2/1.JPG', target_size=(width, height))
-
-plt.imshow(type_2)
-plt.show()
-
-type_2_x = np.expand_dims(type_2, axis=0)
-predictions = model.predict(type_2_x)
-index = np.argmax(predictions)
-
-print(class_names[index])
-
-type_3 = load_img('img_3/1.JPG', target_size=(width, height))
-
-plt.imshow(type_3)
-plt.show()
-
-type_3_x = np.expand_dims(type_3, axis=0)
-predictions = model.predict(type_3_x)
-index = np.argmax(predictions)
-
-print(class_names[index])
-
-type_4 = load_img('img_4/1.jpg', target_size=(width, height))
-
-plt.imshow(type_4)
-plt.show()
-
-type_4_x = np.expand_dims(type_4, axis=0)
-predictions = model.predict(type_4_x)
-index = np.argmax(predictions)
-
-print(class_names[index])
-
-
-# Live predictions using camera
-
-from keras.applications import inception_v3
-import time 
-
-CAMERA = cv2.VideoCapture(0)
-camera_height = 500
-
-# while True:
-#     _, frame = CAMERA.read()
-
-#     # Flip
-#     frame = cv2.flip(frame, 1)
-
-#     # Rescale the image output
-#     aspect = frame.shape[1] / float(frame.shape[0])
-#     res = int(aspect * camera_height)  # Landscape orientation - wide image
-#     frame = cv2.resize(frame, (res, camera_height))
-
-#     # Get ROI
-#     roi = frame[rectangle_y1:rectangle_y2, rectangle_x1:rectangle_x2]
-#     # roi = frame[50:425, 150:650]
-
-#     # Parse BRG to RGB
-#     roi = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
-
-#     # Adjust alignment
-#     roi = cv2.resize(roi, (width, height))
-#     roi_x = np.expand_dims(roi, axis=0)
-
-#     predictions = model.predict(roi_x)
-#     type_1_x, type_2_x, type_3_x, type_4_x = predictions[0]
-
-#     # Green rectangle
-#     # Calculate the center of the bounding box
-#     center_x = int((150 + 650) / 2)
-#     center_y = int((50 + 425) / 2)
-
-#     # Calculate the new coordinates for the centered bounding box
-#     box_width = 650 - 150
-#     box_height = 425 - 50
-    
-#     rectangle_x1 = center_x - int(box_width / 2)
-#     rectangle_y1 = center_y - int(box_height / 2)
-#     rectangle_x2 = center_x + int(box_width / 2)
-#     rectangle_y2 = center_y + int(box_height / 2)
-    
-#     # Calculate the offset for centering the bounding box
-#     offset_x = int((save_width - box_width) / 2)
-#     offset_y = int((save_height - box_height) / 2)
-
-#     # Adjust the coordinates based on the offset
-#     rectangle_x1 += offset_x
-#     rectangle_y1 += offset_y
-#     rectangle_x2 += offset_x
-#     rectangle_y2 += offset_y
-
-#     # Draw the centered bounding box
-#     cv2.rectangle(frame, (rectangle_x1, rectangle_y1), (rectangle_x2, rectangle_y2), (0, 255, 0), 2)
-
-#     # cv2.rectangle(frame, (150, 50), (650, 425), (0, 255, 0), 2)
-
-#     # Predictions/Labels
-#     type_1_text = '{} - {}%'.format(class_names[0], int(type_1_x * 100))
-#     cv2.putText(frame, type_1_text, (70, 210), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
-
-#     type_2_text = '{} - {}%'.format(class_names[1], int(type_2_x * 100))
-#     cv2.putText(frame, type_2_text, (70, 235), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
-
-#     type_3_text = '{} - {}%'.format(class_names[2], int(type_3_x * 100))
-#     cv2.putText(frame, type_3_text, (70, 255), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
-
-#     type_4_text = '{} - {}%'.format(class_names[3], int(type_4_x * 100))
-#     cv2.putText(frame, type_4_text, (70, 275), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
-
-#     cv2.imshow('Real-time object detection', frame)
-
-#     # Controls q = quit
-#     key = cv2.waitKey(1)
-#     if key & 0xFF == ord('q'):
-#         break
-
-# # Release the camera
-# CAMERA.release()
-# cv2.destroyAllWindows()
-
 while True:
-    _, frame = CAMERA.read()
+    #situational - values, you may not adjust these
 
-    # Flip
-    frame = cv2.flip(frame, 1)
+    conv_1 =16
+    conv_1_drop = 0.2
+    conv_2 = 32
+    conv_2_drop = 0.2
+    dense_1_n = 1024
+    dense_1_n_drop = 0.2
+    dense_2_n = 512
+    dense_2_n_drop = 0.2
 
-    # Rescale the image output
-    aspect = frame.shape[1] / float(frame.shape[0])
-    res = int(aspect * camera_height)  # Landscape orientation - wide image
-    frame = cv2.resize(frame, (res, camera_height))
+    #values you can adjust
 
-    # Calculate the center of the bounding box
-    window_center_x = frame.shape[1] // 2
-    window_center_y = frame.shape[0] // 2
+    lr = 0.001
+    epochs = 20
+    batch_size = 5
+    color_channels = 3
 
-    # Calculate the new width and height for the adjusted bounding box
-    box_width = 400
-    box_height = int(box_width / aspect)
+    def build_model( conv_1_drop = conv_1_drop, conv_2_drop = conv_2_drop,
+                    dense_1_n = dense_1_n, dense_1_n_drop = dense_1_n_drop,
+                    dense_2_n = dense_2_n, dense_2_n_drop = dense_2_n_drop,
+                    lr=lr):
+        
+        model = Sequential()
+        
+        model.add(Convolution2D(conv_1, (3,3),
+                                input_shape = (width, height, color_channels),
+                                activation='relu'))
+        
+        model.add(MaxPooling2D(pool_size=(2,2)))
+        
+        model.add(Dropout(conv_1_drop))
+        
+        #---
+        
+        model.add(Convolution2D(conv_2, (3,3), activation='relu'))
+        model.add(MaxPooling2D(pool_size=(2,2)))
+        model.add(Dropout(conv_1_drop))
+        
+        # ---
+        
+        model.add(Flatten())
+        
+        # ---
+        
+        model.add(Dense(dense_1_n, activation='relu'))
+        model.add(Dropout(dense_1_n_drop))
+        
+        # ---
+        
+        model.add(Dense(dense_2_n, activation='relu'))
+        model.add(Dropout(dense_2_n_drop))
+        
+        # ---
+        
+        model.add(Dense(len(class_names), activation='softmax'))
+        
+        model.compile(loss='categorical_crossentropy',
+                    optimizer=Adam(clipvalue=0.5),
+                    metrics=['accuracy'])
+        
+        return model
+
+    # model parameter
+
+    model = build_model()
+
+    model.summary()
+
+    history = model.fit(X, y, validation_split=0.10, epochs=epochs, batch_size=batch_size)
+
+    print (history)
+
+    # Model evaluation
+    scores = model.evaluate(X, y, verbose=1)
+    print ("Accuracy: %.2f%%" %(scores[1]*100))
+
+    plt.plot(history.history['accuracy'])
+    plt.plot(history.history['val_accuracy'])
+    plt.title('Model Accuracy')
+    plt.ylabel('loss and accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
+
+    plt.plot(history.history['loss'])
+    plt.title('Model Loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
+
+    plt.plot(history.history['accuracy'])
+    plt.title('Model Accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
+
+    #prediction
+    import seaborn as sns 
+    from sklearn.metrics import confusion_matrix
+
+    def plt_show(img):
+        plt.imshow(img)
+        plt.show()
+        
+    # #learning data
+    # fork = "img_1/10.png"
+    # glasses = "img_2/16.png"
+    # plate = "img_3/09.png"
+    # spoon = "img_4/10.png"
+        
+    #learning data
+    kanan = "img_1/1.JPG"
+    mari = "img_2/1.JPG"
+    chika = "img_3/1.JPG"
+    ruby = "img_4/1.JPG"
+
+    # imgs = [fork, glasses, plate, spoon]
+
+    imgs = [kanan, mari, chika, ruby]
+
+    # def predict_(img_path):
+
+    classes = None
+    predicted_classes = []
+    true_labels = []
+
+    for i in range(len(imgs)):
+        type_ = load_img(imgs[i], target_size=(width, height))
+        plt.imshow(type_)
+        plt.show()
+        
+        type_x = np.expand_dims(type_, axis=0)
+        prediction = model.predict(type_x)
+        index = np.argmax(prediction)
+        print(class_names[index])
+        classes = class_names[index]
+        predicted_classes.append(class_names[index])
+        
+        true_labels.append(class_names[i % len(class_names)])  # Append the true class to the true_labels list
+        
+    cm = confusion_matrix(true_labels, predicted_classes)
+    f = sns.heatmap(cm, xticklabels=class_names, yticklabels=predicted_classes, annot=True)
+
+    # type_1 = load_img('img_1/10.png', target_size=(width, height))
+
+    # plt.imshow(type_1)
+    # plt.show()
+
+    # type_1_x = np.expand_dims(type_1, axis=0)
+    # predictions = model.predict(type_1_x)
+    # index = np.argmax(predictions)
+
+    # print(class_names[index])
+
+    # type_2 = load_img('img_2/16.png', target_size=(width, height))
+
+    # plt.imshow(type_2)
+    # plt.show()
+
+    # type_2_x = np.expand_dims(type_2, axis=0)
+    # predictions = model.predict(type_2_x)
+    # index = np.argmax(predictions)
+
+    # print(class_names[index])
+
+    # type_3 = load_img('img_3/09.png', target_size=(width, height))
+
+    # plt.imshow(type_3)
+    # plt.show()
+
+    # type_3_x = np.expand_dims(type_3, axis=0)
+    # predictions = model.predict(type_3_x)
+    # index = np.argmax(predictions)
+
+    # print(class_names[index])
+
+    # type_4 = load_img('img_4/10.png', target_size=(width, height))
+
+    # plt.imshow(type_4)
+    # plt.show()
+
+    # type_4_x = np.expand_dims(type_4, axis=0)
+    # predictions = model.predict(type_4_x)
+    # index = np.argmax(predictions)
+
+    # print(class_names[index])
+
+    type_1 = load_img('img_1/1.JPG', target_size=(width, height))
+
+    plt.imshow(type_1)
+    plt.show()
+
+    type_1_x = np.expand_dims(type_1, axis=0)
+    predictions = model.predict(type_1_x)
+    index = np.argmax(predictions)
+
+    print(class_names[index])
+
+    type_2 = load_img('img_2/1.JPG', target_size=(width, height))
+
+    plt.imshow(type_2)
+    plt.show()
+
+    type_2_x = np.expand_dims(type_2, axis=0)
+    predictions = model.predict(type_2_x)
+    index = np.argmax(predictions)
+
+    print(class_names[index])
+
+    type_3 = load_img('img_3/1.JPG', target_size=(width, height))
+
+    plt.imshow(type_3)
+    plt.show()
+
+    type_3_x = np.expand_dims(type_3, axis=0)
+    predictions = model.predict(type_3_x)
+    index = np.argmax(predictions)
+
+    print(class_names[index])
+
+    type_4 = load_img('img_4/1.jpg', target_size=(width, height))
+
+    plt.imshow(type_4)
+    plt.show()
+
+    type_4_x = np.expand_dims(type_4, axis=0)
+    predictions = model.predict(type_4_x)
+    index = np.argmax(predictions)
+
+    print(class_names[index])
+
+    answer = input("Do you want to train and evaluate the model again? (y/n): ")
     
-    # Calculate the offset for centering the frame
-    # offset_x = ((frame.shape[1] - box_width) // 2)
-    # offset_y = ((frame.shape[0] - box_height) // 2)
-    
-    # Calculate the new coordinates for the adjusted bounding box
-    new_rectangle_x1 = window_center_x - (box_width // 2)
-    new_rectangle_y1 = window_center_y - (box_height // 2)
-    new_rectangle_x2 = window_center_x + (box_width // 2)
-    new_rectangle_y2 = window_center_y + (box_height // 2)
-
-    # Get ROI
-    roi = frame[new_rectangle_y1:new_rectangle_y2, new_rectangle_x1:new_rectangle_x2]
-
-    # Parse BRG to RGB
-    roi = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
-
-    # Adjust alignment
-    roi = cv2.resize(roi, (width, height))
-    roi_x = np.expand_dims(roi, axis=0)
-
-    predictions = model.predict(roi_x)
-    type_1_x, type_2_x, type_3_x, type_4_x = predictions[0]
-
-    # Draw the adjusted bounding box
-    cv2.rectangle(frame, (new_rectangle_x1, new_rectangle_y1), (new_rectangle_x2, new_rectangle_y2), (0, 255, 0), 2)
-
-    # Predictions/Labels
-    type_1_text = '{} - {}%'.format(class_names[0], int(type_1_x * 100))
-    cv2.putText(frame, type_1_text, (70, 210), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
-
-    type_2_text = '{} - {}%'.format(class_names[1], int(type_2_x * 100))
-    cv2.putText(frame, type_2_text, (70, 235), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
-
-    type_3_text = '{} - {}%'.format(class_names[2], int(type_3_x * 100))
-    cv2.putText(frame, type_3_text, (70, 255), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
-
-    type_4_text = '{} - {}%'.format(class_names[3], int(type_4_x * 100))
-    cv2.putText(frame, type_4_text, (70, 275), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (240, 240, 240), 2)
-    
-    # roi_x1 = new_rectangle_x1
-    # roi_y1 = new_rectangle_y1
-    # roi_x2 = new_rectangle_x2
-    # roi_y2 = new_rectangle_y2
-
-    # if roi_x1 >= 0 and roi_y1 >= 0 and roi_x2 <= frame.shape[1] and roi_y2 <= frame.shape[0]:
-    #     print("ROI matches adjusted bounding box")
-    # else:
-    #     print("ROI does not match adjusted bounding box")
-
-    cv2.imshow('Real-time object detection', frame)
-
-    # Controls q = quit
-    key = cv2.waitKey(1)
-    if key & 0xFF == ord('q'):
+    if answer.lower() == "n" or answer.lower() == "no" or answer.lower() == "N" or answer.lower() == "no":
         break
 
-# Release the camera
-CAMERA.release()
-cv2.destroyAllWindows()
+# Options for saving the model
+print ("What do you want to name the model file? (e.g. model): ")
+model_name = input()
+model.save(model_name + '.h5')  # Keras model
+
+live_capture()
+
