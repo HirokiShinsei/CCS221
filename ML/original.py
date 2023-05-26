@@ -496,5 +496,3 @@ while(True):
 # Camera
 CAMERA.release()
 cv2.destroyAllWindows()
-
-
